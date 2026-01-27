@@ -17,7 +17,7 @@ onMounted(async () => {
     const data = await response.json()
     msg.value = data.message
   } catch (error) {
-    msg.value = "无法连接到后端！"
+    msg.value = "无法连接到后端！2026.01.28"
     console.error(error)
   }
 })
