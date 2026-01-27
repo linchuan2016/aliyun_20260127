@@ -9,7 +9,7 @@ onMounted(async () => {
     // const response = await fetch('http://127.0.0.1:8000/api/data')
     const apiUrl = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
     const response = await fetch(`${apiUrl}/api/data`);
-
+    
     const data = await response.json()
     msg.value = data.message
   } catch (error) {
