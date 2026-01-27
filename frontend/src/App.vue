@@ -6,9 +6,13 @@ const msg = ref('等待数据中...')
 // 页面加载时向后端请求数据
 onMounted(async () => {
   try {
-    // const response = await fetch('http://127.0.0.1:8000/api/data')
-    const apiUrl = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
-    const response = await fetch(`${apiUrl}/api/data`);
+    // 生产环境：使用相对路径（通过 Nginx 代理）
+    // 本地开发：使用环境变量或默认本地地址
+    const apiUrl = import.meta.env.VITE_API_URL || '';
+    // 如果 apiUrl 为空，使用相对路径（生产环境）
+    // 如果 apiUrl 有值，使用完整 URL（本地开发）
+    const url = apiUrl ? `${apiUrl}/api/data` : '/api/data';
+    const response = await fetch(url);
     
     const data = await response.json()
     msg.value = data.message
