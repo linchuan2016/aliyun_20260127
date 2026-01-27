@@ -1,21 +1,38 @@
-# --- Python / Backend ---
+# Python
 venv/
 __pycache__/
 *.pyc
-.env
+*.pyo
+*.pyd
+.Python
 backend/__pycache__/
 
-# --- Frontend / Node ---
+# Node.js
 node_modules/
 frontend/node_modules/
 dist/
-.DS_Store
-*.local
+frontend/dist/
+*.log
+npm-debug.log*
 
-# --- IDE / OS ---
+# Environment
+.env
+.env.local
+.env.*.local
+
+# IDE
 .vscode/
 .idea/
-Thumbs.db
+*.swp
+*.swo
+*~
 
-# --- Project Specific ---
-服务器地址.txt
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Build
+*.egg-info/
+build/
+*.so
