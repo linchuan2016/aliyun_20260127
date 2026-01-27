@@ -6,13 +6,10 @@ const msg = ref('等待数据中...')
 // 页面加载时向后端请求数据
 onMounted(async () => {
   try {
-    // 生产环境：使用相对路径（通过 Nginx 代理）
-    // 本地开发：使用环境变量或默认本地地址
-    const apiUrl = import.meta.env.VITE_API_URL || '';
-    // 如果 apiUrl 为空，使用相对路径（生产环境）
-    // 如果 apiUrl 有值，使用完整 URL（本地开发）
-    const url = apiUrl ? `${apiUrl}/api/data` : '/api/data';
-    const response = await fetch(url);
+    // 直接使用相对路径，通过 Nginx 代理到后端
+    // 生产环境：/api/data -> Nginx -> http://127.0.0.1:8000/api/data
+    // 本地开发：如果前端运行在 5173，后端在 8000，需要设置代理或使用完整 URL
+    const response = await fetch('/api/data');
     
     const data = await response.json()
     msg.value = data.message
