@@ -1,8 +1,16 @@
 import os
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy.orm import Session
+
+# 导入数据库相关（必须在 models 之前）
+from database import get_db, engine, Base
+from models import Product
 
 app = FastAPI(title="My Fullstack App API")
+
+# 确保数据库表已创建
+Base.metadata.create_all(bind=engine)
 
 # CORS 配置：允许前端域名访问
 # 本地开发：默认允许本地前端端口
@@ -36,6 +44,20 @@ async def get_data():
 async def health_check():
     """健康检查接口"""
     return {"status": "ok"}
+
+@app.get("/api/products")
+async def get_products(db: Session = Depends(get_db)):
+    """获取所有产品列表"""
+    products = db.query(Product).order_by(Product.order_index).all()
+    return {"products": [product.to_dict() for product in products]}
+
+@app.get("/api/products/{product_name}")
+async def get_product(product_name: str, db: Session = Depends(get_db)):
+    """根据产品名称获取单个产品信息"""
+    product = db.query(Product).filter(Product.name == product_name).first()
+    if not product:
+        return {"error": "Product not found"}, 404
+    return {"product": product.to_dict()}
 
 if __name__ == "__main__":
     import uvicorn

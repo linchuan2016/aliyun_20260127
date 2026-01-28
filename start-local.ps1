@@ -15,3 +15,4 @@ Write-Host ""
 Write-Host "按任意键关闭此窗口（服务将继续运行）..."
 $null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
 
+
