@@ -1,0 +1,59 @@
+# Download product icons script
+$ErrorActionPreference = "Stop"
+
+$iconsDir = "frontend\public\icons"
+
+# Product list with Google Favicon API URLs
+$products = @(
+    @{name="moltbot"; url="https://www.google.com/s2/favicons?domain=moltbot.com&sz=64"},
+    @{name="notebooklm"; url="https://www.google.com/s2/favicons?domain=notebooklm.google.com&sz=64"},
+    @{name="manus"; url="https://www.google.com/s2/favicons?domain=manus.ai&sz=64"},
+    @{name="cursor"; url="https://www.google.com/s2/favicons?domain=cursor.sh&sz=64"},
+    @{name="toolify"; url="https://www.google.com/s2/favicons?domain=toolify.ai&sz=64"},
+    @{name="aibase"; url="https://www.google.com/s2/favicons?domain=aibase.com&sz=64"},
+    @{name="huggingface"; url="https://www.google.com/s2/favicons?domain=huggingface.co&sz=64"},
+    @{name="futurepedia"; url="https://www.google.com/s2/favicons?domain=futurepedia.io&sz=64"}
+)
+
+Write-Host ""
+Write-Host "==========================================" -ForegroundColor Cyan
+Write-Host "Downloading product icons" -ForegroundColor Cyan
+Write-Host "==========================================" -ForegroundColor Cyan
+Write-Host ""
+
+# Create icons directory
+if (-not (Test-Path $iconsDir)) {
+    New-Item -ItemType Directory -Path $iconsDir -Force | Out-Null
+    Write-Host "Created icons directory: $iconsDir" -ForegroundColor Green
+}
+
+# Download each icon
+foreach ($product in $products) {
+    $name = $product.name
+    $url = $product.url
+    $outputPath = Join-Path $iconsDir "$name.png"
+    
+    Write-Host "Downloading $name..." -ForegroundColor Yellow
+    Write-Host "  URL: $url" -ForegroundColor Gray
+    
+    try {
+        Invoke-WebRequest -Uri $url -OutFile $outputPath -ErrorAction Stop
+        Write-Host "  Success: $name -> $outputPath" -ForegroundColor Green
+    } catch {
+        Write-Host "  Failed: $name - $_" -ForegroundColor Red
+        # Create placeholder if download fails
+        $svgPath = Join-Path $iconsDir "$name.svg"
+        $firstLetter = $name.Substring(0,1).ToUpper()
+        $svgContent = "<svg xmlns=`"http://www.w3.org/2000/svg`" viewBox=`"0 0 100 100`"><rect width=`"100`" height=`"100`" fill=`"#667eea`" rx=`"10`"/><text x=`"50`" y=`"70`" font-family=`"Arial, sans-serif`" font-size=`"30`" font-weight=`"bold`" fill=`"#FFFFFF`" text-anchor=`"middle`">$firstLetter</text></svg>"
+        Set-Content -Path $svgPath -Value $svgContent -Encoding UTF8
+        Write-Host "  Created placeholder: $svgPath" -ForegroundColor Yellow
+    }
+}
+
+Write-Host ""
+Write-Host "==========================================" -ForegroundColor Green
+Write-Host "Icon download completed!" -ForegroundColor Green
+Write-Host "==========================================" -ForegroundColor Green
+Write-Host ""
+Write-Host "Icons saved to: $iconsDir" -ForegroundColor Cyan
+Write-Host ""

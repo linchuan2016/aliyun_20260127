@@ -7,7 +7,7 @@
     class="product-card"
   >
     <div class="product-image">
-      <img :src="product.image_url || '/vite.svg'" :alt="product.title" />
+      <img :src="getIconUrl(product)" :alt="product.title" @error="handleImageError" />
     </div>
     <div class="product-content">
       <h2 class="product-title">{{ product.title }}</h2>
@@ -21,7 +21,7 @@
   </a>
   <div v-else class="product-card">
     <div class="product-image">
-      <img :src="product.image_url || '/vite.svg'" :alt="product.title" />
+      <img :src="getIconUrl(product)" :alt="product.title" @error="handleImageError" />
     </div>
     <div class="product-content">
       <h2 class="product-title">{{ product.title }}</h2>
@@ -36,104 +36,34 @@
 </template>
 
 <script setup>
+import '../styles/ProductCard.css'
+
 defineProps({
   product: {
     type: Object,
     required: true
   }
 })
+
+const handleImageError = (event) => {
+  // 如果图标加载失败，使用占位图标
+  const placeholderUrl = '/icons/placeholder.svg'
+  if (event.target.src !== placeholderUrl && !event.target.src.includes('placeholder')) {
+    console.warn('图标加载失败，使用占位图标:', event.target.src)
+    event.target.src = placeholderUrl
+  }
+}
+
+// 生成产品图标 URL 的辅助函数
+const getIconUrl = (product) => {
+  if (!product || !product.image_url) {
+    return '/icons/placeholder.svg'
+  }
+  // 如果是外部 URL，直接返回
+  if (product.image_url.startsWith('http')) {
+    return product.image_url
+  }
+  // 如果是相对路径，返回
+  return product.image_url
+}
 </script>
-
-<style scoped>
-.product-card {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-  overflow: hidden;
-  transition: all 0.3s ease;
-  display: block;
-  text-decoration: none;
-  color: inherit;
-  cursor: pointer;
-  backdrop-filter: blur(10px);
-}
-
-.product-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
-  border-color: rgba(255, 255, 255, 0.2);
-  background: rgba(255, 255, 255, 0.08);
-}
-
-.product-image {
-  width: 100%;
-  height: 80px;
-  overflow: hidden;
-  background: #ffffff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.75rem;
-}
-
-.product-image img {
-  max-width: 50px;
-  max-height: 50px;
-  object-fit: contain;
-  display: block;
-  margin: 0 auto;
-}
-
-.product-content {
-  padding: 0.75rem;
-}
-
-.product-title {
-  font-size: 1rem;
-  font-weight: 700;
-  color: #ffffff;
-  margin-bottom: 0.5rem;
-  line-height: 1.3;
-}
-
-.product-description {
-  font-size: 0.75rem;
-  line-height: 1.4;
-  color: rgba(255, 255, 255, 0.7);
-  margin-bottom: 0.5rem;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.product-features {
-  margin-top: 0.5rem;
-  padding-top: 0.5rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.product-features ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.product-features li {
-  padding: 0.25rem 0;
-  padding-left: 0.75rem;
-  position: relative;
-  color: rgba(255, 255, 255, 0.6);
-  font-size: 0.7rem;
-  line-height: 1.4;
-}
-
-.product-features li::before {
-  content: "•";
-  position: absolute;
-  left: 0;
-  color: #00d4ff;
-  font-weight: bold;
-}
-</style>

@@ -25,7 +25,7 @@ def init_db():
                 title="Moltbot",
                 description="AI 智能对话机器人，支持自然语言理解和多轮对话。",
                 features="自然语言理解\n多轮对话\n智能助手",
-                image_url="https://www.google.com/s2/favicons?domain=moltbot.com&sz=128",
+                image_url="/icons/moltbot.png",
                 official_url="https://moltbot.com",
                 order_index=1
             ),
@@ -34,7 +34,7 @@ def init_db():
                 title="NotebookLM",
                 description="Google 的 AI 笔记助手，帮助整理和分析笔记内容。",
                 features="智能笔记\n自动摘要\n内容问答",
-                image_url="https://www.google.com/s2/favicons?domain=notebooklm.google.com&sz=128",
+                image_url="/icons/notebooklm.png",
                 official_url="https://notebooklm.google.com",
                 order_index=2
             ),
@@ -43,7 +43,7 @@ def init_db():
                 title="Manus",
                 description="智能文档处理系统，支持多格式文档和信息提取。",
                 features="文档处理\n信息提取\n知识库",
-                image_url="https://www.google.com/s2/favicons?domain=manus.ai&sz=128",
+                image_url="/icons/manus.png",
                 official_url="https://manus.ai",
                 order_index=3
             ),
@@ -52,7 +52,7 @@ def init_db():
                 title="Cursor",
                 description="AI 驱动的代码编辑器，提升编程效率。",
                 features="AI 编程\n代码补全\n智能提示",
-                image_url="https://www.google.com/s2/favicons?domain=cursor.sh&sz=128",
+                image_url="/icons/cursor.png",
                 official_url="https://cursor.sh",
                 order_index=4
             ),
@@ -61,7 +61,7 @@ def init_db():
                 title="Toolify.ai",
                 description="AI 工具聚合平台，发现和比较各种 AI 工具。",
                 features="工具聚合\nAI 搜索\n工具比较",
-                image_url="https://www.google.com/s2/favicons?domain=toolify.ai&sz=128",
+                image_url="/icons/toolify.png",
                 official_url="https://toolify.ai",
                 order_index=5
             ),
@@ -70,7 +70,7 @@ def init_db():
                 title="AIbase",
                 description="AI 工具数据库，收录大量 AI 应用和工具。",
                 features="工具数据库\n分类搜索\n工具推荐",
-                image_url="https://www.google.com/s2/favicons?domain=aibase.com&sz=128",
+                image_url="/icons/aibase.png",
                 official_url="https://aibase.com",
                 order_index=6
             ),
@@ -79,7 +79,7 @@ def init_db():
                 title="Hugging Face",
                 description="AI 模型和数据集平台，开源 AI 社区。",
                 features="模型库\n数据集\n开源社区",
-                image_url="https://www.google.com/s2/favicons?domain=huggingface.co&sz=128",
+                image_url="/icons/huggingface.png",
                 official_url="https://huggingface.co",
                 order_index=7
             ),
@@ -88,7 +88,7 @@ def init_db():
                 title="Futurepedia",
                 description="AI 工具目录，发现最新的 AI 应用和工具。",
                 features="工具目录\n最新资讯\n分类浏览",
-                image_url="https://www.google.com/s2/favicons?domain=futurepedia.io&sz=128",
+                image_url="/icons/futurepedia.png",
                 official_url="https://www.futurepedia.io",
                 order_index=8
             ),

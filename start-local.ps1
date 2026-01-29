@@ -57,12 +57,16 @@ if (Test-Path $requirementsPath) {
     
     if ($missingPackages.Count -gt 0) {
         Write-Host "   Missing packages: $($missingPackages -join ', ')" -ForegroundColor Yellow
-        Write-Host "   Installing dependencies..." -ForegroundColor Gray
-        & $venvPython -m pip install -r $requirementsPath
+        Write-Host "   Installing dependencies (using Tsinghua mirror)..." -ForegroundColor Gray
+        & $venvPython -m pip install -r $requirementsPath -i https://pypi.tuna.tsinghua.edu.cn/simple
         if ($LASTEXITCODE -ne 0) {
-            Write-Host "   Error: Failed to install dependencies!" -ForegroundColor Red
-            Write-Host "   Please check the error message above" -ForegroundColor Yellow
-            exit 1
+            Write-Host "   Warning: Failed with mirror, trying default source..." -ForegroundColor Yellow
+            & $venvPython -m pip install -r $requirementsPath
+            if ($LASTEXITCODE -ne 0) {
+                Write-Host "   Error: Failed to install dependencies!" -ForegroundColor Red
+                Write-Host "   Please check the error message above" -ForegroundColor Yellow
+                exit 1
+            }
         }
         Write-Host "   Dependencies installed successfully" -ForegroundColor Green
     } else {
@@ -104,7 +108,7 @@ Write-Host ""
 # Check frontend dependencies
 Write-Host "4. Checking frontend dependencies..." -ForegroundColor Yellow
 if (-not (Test-Path (Join-Path $frontendPath "node_modules"))) {
-    Write-Host "   Installing frontend dependencies..." -ForegroundColor Gray
+    Write-Host "   Installing frontend dependencies (using npmmirror.com)..." -ForegroundColor Gray
     Push-Location $frontendPath
     npm install
     $npmExitCode = $LASTEXITCODE
