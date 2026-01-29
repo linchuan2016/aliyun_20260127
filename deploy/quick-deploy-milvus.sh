@@ -11,11 +11,19 @@ echo ""
 
 # 检查并安装 Docker
 if ! command -v docker &> /dev/null; then
-    echo "安装 Docker..."
-    curl -fsSL https://get.docker.com | bash
-    sudo systemctl start docker
-    sudo systemctl enable docker
-    echo "✓ Docker 安装完成"
+    echo "安装 Docker（使用阿里云镜像源）..."
+    if [ -f "deploy/install-docker-aliyun.sh" ]; then
+        chmod +x deploy/install-docker-aliyun.sh
+        sudo ./deploy/install-docker-aliyun.sh
+    else
+        echo "使用 yum 安装 Docker..."
+        sudo yum install -y yum-utils
+        sudo yum-config-manager --add-repo https://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo
+        sudo yum install -y docker-ce docker-ce-cli containerd.io
+        sudo systemctl start docker
+        sudo systemctl enable docker
+        echo "✓ Docker 安装完成"
+    fi
 else
     echo "✓ Docker 已安装"
 fi
@@ -23,9 +31,20 @@ fi
 # 检查并安装 Docker Compose
 if ! command -v docker-compose &> /dev/null; then
     echo "安装 Docker Compose..."
-    sudo curl -L "https://github.com/docker/compose/releases/download/v2.20.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-    sudo chmod +x /usr/local/bin/docker-compose
-    echo "✓ Docker Compose 安装完成"
+    if [ -f "deploy/install-docker-compose.sh" ]; then
+        chmod +x deploy/install-docker-compose.sh
+        sudo ./deploy/install-docker-compose.sh
+    else
+        COMPOSE_VERSION="2.20.0"
+        ARCH=$(uname -m)
+        sudo curl -L "https://github.com/docker/compose/releases/download/v${COMPOSE_VERSION}/docker-compose-linux-${ARCH}" -o /usr/local/bin/docker-compose || {
+            echo "使用 wget 下载..."
+            sudo wget -O /usr/local/bin/docker-compose "https://github.com/docker/compose/releases/download/v${COMPOSE_VERSION}/docker-compose-linux-${ARCH}"
+        }
+        sudo chmod +x /usr/local/bin/docker-compose
+        sudo ln -sf /usr/local/bin/docker-compose /usr/bin/docker-compose 2>/dev/null || true
+        echo "✓ Docker Compose 安装完成"
+    fi
 else
     echo "✓ Docker Compose 已安装"
 fi
