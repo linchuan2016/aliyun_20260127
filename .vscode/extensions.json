@@ -1,0 +1,21 @@
+{
+  "recommendations": [
+    // Vue 3 官方推荐插件（必需）
+    "Vue.volar",
+    "Vue.vscode-typescript-vue-plugin",
+    
+    // 代码格式化（推荐）
+    "esbenp.prettier-vscode",
+    
+    // 代码检查（可选）
+    "dbaeumer.vscode-eslint",
+    
+    // Tailwind CSS 支持（可选）
+    "bradlc.vscode-tailwindcss"
+  ],
+  "unwantedRecommendations": [
+    // 禁用 Vetur（与 Volar 冲突）
+    "octref.vetur"
+  ]
+}
+

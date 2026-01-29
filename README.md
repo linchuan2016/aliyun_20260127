@@ -27,8 +27,17 @@ my-fullstack-app/
 │   ├── package.json
 │   └── vite.config.js
 ├── deploy/          # 部署配置
-│   ├── my-fullstack-app.service  # systemd 服务文件
-│   └── nginx.conf                 # Nginx 配置
+│   ├── my-fullstack-app.service      # systemd 服务文件（HTTP）
+│   ├── my-fullstack-app-ssl.service  # systemd 服务文件（HTTPS）
+│   ├── nginx.conf                     # Nginx 配置（HTTP）
+│   ├── nginx-ssl.conf                 # Nginx 配置（HTTPS）
+│   ├── apply-ssl-complete-fixed.sh    # SSL 配置应用脚本
+│   ├── upload-ssl-cert.bat            # SSL 证书上传脚本（Windows）
+│   ├── upload-ssl-cert.ps1            # SSL 证书上传脚本（PowerShell）
+│   └── sync-to-server.ps1             # 代码同步脚本
+├── .vscode/         # 编辑器配置
+│   ├── settings.json      # VS Code/Cursor 设置
+│   └── extensions.json    # 推荐插件列表
 ├── start-local.ps1  # 本地启动脚本（Windows）
 └── README.md
 ```
@@ -119,9 +128,55 @@ API 文档：http://127.0.0.1:8000/docs
 - **NotebookLM** - 智能笔记助手
 - **Manus** - 智能文档处理
 
+## 编辑器设置
+
+### Vue 文件语法高亮
+
+如果 Vue 文件没有语法高亮，请安装以下插件：
+
+1. **Volar** (Vue Language Features) - Vue 3 官方推荐
+2. **TypeScript Vue Plugin** (Volar) - TypeScript 支持
+
+安装方法：
+- 按 `Ctrl+Shift+X` 打开扩展面板
+- 搜索 "Volar" 并安装
+- 重启编辑器
+
+项目已包含 `.vscode/settings.json` 和 `.vscode/extensions.json` 配置文件。
+
 ## 部署
 
-参考 `deploy/` 目录下的配置文件进行部署。
+### 阿里云服务器部署
+
+#### 1. 基础部署（HTTP）
+
+1. 将代码同步到服务器
+2. 配置 Nginx：`deploy/nginx.conf`
+3. 配置 systemd：`deploy/my-fullstack-app.service`
+4. 启动服务
+
+#### 2. SSL 部署（HTTPS）
+
+1. **上传 SSL 证书**
+   ```powershell
+   # Windows 本地执行
+   .\deploy\upload-ssl-cert.bat
+   ```
+
+2. **应用 SSL 配置**
+   ```bash
+   # 在服务器上执行
+   chmod +x deploy/apply-ssl-complete-fixed.sh
+   sudo ./deploy/apply-ssl-complete-fixed.sh
+   ```
+
+3. **重启服务**
+   ```bash
+   sudo systemctl restart my-fullstack-app
+   sudo systemctl restart nginx
+   ```
+
+详细部署步骤请参考 `deploy/` 目录下的配置文件。
 
 ## 许可证
 

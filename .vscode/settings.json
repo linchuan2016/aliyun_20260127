@@ -1,0 +1,52 @@
+{
+  // ============================================
+  // Vue 文件语法高亮配置
+  // ============================================
+  
+  // 文件关联 - 确保 .vue 文件被识别为 Vue
+  "files.associations": {
+    "*.vue": "vue"
+  },
+  
+  // 禁用 Vetur（如果安装了，会与 Volar 冲突）
+  "vetur.enable": false,
+  
+  // Volar 配置（Vue 3 官方推荐插件）
+  "volar.autoCompleteRefs": true,
+  "volar.codeLens.pugTools": false,
+  "volar.codeLens.scriptSetupTools": true,
+  "volar.completion.preferredTagNameCase": "pascal",
+  "volar.takeOverMode.enabled": true,
+  
+  // TypeScript Vue Plugin 配置
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "typescript.enablePromptUseWorkspaceTsdk": true,
+  
+  // 文件编码
+  "files.encoding": "utf8",
+  "files.eol": "\n",
+  
+  // 编辑器配置
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "Vue.volar",
+  "[vue]": {
+    "editor.defaultFormatter": "Vue.volar"
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  
+  // 自动保存
+  "files.autoSave": "afterDelay",
+  "files.autoSaveDelay": 1000,
+  
+  // 文件图标主题（可选）
+  "workbench.iconTheme": "vscode-icons"
+}
+

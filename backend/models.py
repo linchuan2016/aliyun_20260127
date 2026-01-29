@@ -16,6 +16,7 @@ class Product(Base):
     description = Column(Text, nullable=False, comment="产品描述")
     features = Column(Text, comment="产品特性（JSON 格式或换行分隔）")
     image_url = Column(String(500), comment="产品图片 URL")
+    official_url = Column(String(500), comment="官方网站 URL")
     order_index = Column(Integer, default=0, comment="显示顺序")
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
@@ -29,6 +30,7 @@ class Product(Base):
             "description": self.description,
             "features": self.features.split("\n") if self.features else [],
             "image_url": self.image_url,
+            "official_url": self.official_url,
             "order_index": self.order_index,
             "created_at": self.created_at.isoformat() if self.created_at else None,
             "updated_at": self.updated_at.isoformat() if self.updated_at else None,

@@ -1,5 +1,11 @@
 <template>
-  <div class="product-card">
+  <a 
+    v-if="product.official_url" 
+    :href="product.official_url" 
+    target="_blank" 
+    rel="noopener noreferrer"
+    class="product-card"
+  >
     <div class="product-image">
       <img :src="product.image_url || '/vite.svg'" :alt="product.title" />
     </div>
@@ -7,9 +13,22 @@
       <h2 class="product-title">{{ product.title }}</h2>
       <p class="product-description">{{ product.description }}</p>
       <div class="product-features" v-if="product.features && product.features.length > 0">
-        <h3>主要特性：</h3>
         <ul>
-          <li v-for="(feature, index) in product.features" :key="index">{{ feature }}</li>
+          <li v-for="(feature, index) in product.features.slice(0, 2)" :key="index">{{ feature }}</li>
+        </ul>
+      </div>
+    </div>
+  </a>
+  <div v-else class="product-card">
+    <div class="product-image">
+      <img :src="product.image_url || '/vite.svg'" :alt="product.title" />
+    </div>
+    <div class="product-content">
+      <h2 class="product-title">{{ product.title }}</h2>
+      <p class="product-description">{{ product.description }}</p>
+      <div class="product-features" v-if="product.features && product.features.length > 0">
+        <ul>
+          <li v-for="(feature, index) in product.features.slice(0, 2)" :key="index">{{ feature }}</li>
         </ul>
       </div>
     </div>
@@ -27,64 +46,72 @@ defineProps({
 
 <style scoped>
 .product-card {
-  background: white;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 12px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
   overflow: hidden;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  margin-bottom: 2rem;
+  transition: all 0.3s ease;
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+  backdrop-filter: blur(10px);
 }
 
 .product-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+  border-color: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.08);
 }
 
 .product-image {
   width: 100%;
-  height: 250px;
+  height: 80px;
   overflow: hidden;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 0.75rem;
 }
 
 .product-image img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+  max-width: 50px;
+  max-height: 50px;
+  object-fit: contain;
+  display: block;
+  margin: 0 auto;
 }
 
 .product-content {
-  padding: 2rem;
+  padding: 0.75rem;
 }
 
 .product-title {
-  font-size: 1.75rem;
+  font-size: 1rem;
   font-weight: 700;
-  color: #2c3e50;
-  margin-bottom: 1rem;
+  color: #ffffff;
+  margin-bottom: 0.5rem;
+  line-height: 1.3;
 }
 
 .product-description {
-  font-size: 1rem;
-  line-height: 1.6;
-  color: #555;
-  margin-bottom: 1.5rem;
+  font-size: 0.75rem;
+  line-height: 1.4;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 0.5rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .product-features {
-  margin-top: 1.5rem;
-  padding-top: 1.5rem;
-  border-top: 1px solid #eee;
-}
-
-.product-features h3 {
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: #42b983;
-  margin-bottom: 0.75rem;
+  margin-top: 0.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .product-features ul {
@@ -94,19 +121,19 @@ defineProps({
 }
 
 .product-features li {
-  padding: 0.5rem 0;
-  padding-left: 1.5rem;
+  padding: 0.25rem 0;
+  padding-left: 0.75rem;
   position: relative;
-  color: #666;
-  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.7rem;
+  line-height: 1.4;
 }
 
 .product-features li::before {
-  content: "✓";
+  content: "•";
   position: absolute;
   left: 0;
-  color: #42b983;
+  color: #00d4ff;
   font-weight: bold;
 }
 </style>
-
