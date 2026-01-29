@@ -10,11 +10,8 @@ const error = ref(null)
 onMounted(async () => {
   try {
     loading.value = true
-    // 生产环境：使用服务器 IP 地址
-    // 本地开发：使用相对路径（通过 Vite 代理）
-    const isProduction = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
-    const apiUrl = isProduction ? 'http://47.112.29.212' : '';
-    const url = `${apiUrl}/api/products`;
+    // 使用相对路径，通过 Nginx（生产环境）或 Vite 代理（本地开发）访问后端
+    const url = '/api/products';
     
     const response = await fetch(url);
     

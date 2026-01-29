@@ -1,0 +1,19 @@
+[Unit]
+Description=My Fullstack App Backend Service
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/var/www/my-fullstack-app/backend
+Environment="PATH=/var/www/my-fullstack-app/venv/bin"
+Environment="HOST=0.0.0.0"
+Environment="PORT=8000"
+Environment="ALLOWED_ORIGINS=https://linchuan.tech,https://www.linchuan.tech,http://localhost:5173,http://127.0.0.1:5173"
+ExecStart=/var/www/my-fullstack-app/venv/bin/uvicorn main:app --host 0.0.0.0 --port 8000 --workers 4
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
+

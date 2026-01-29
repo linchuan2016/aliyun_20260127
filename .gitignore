@@ -42,3 +42,18 @@ desktop.ini
 *.egg-info/
 build/
 *.so
+
+# SSL Certificates (sensitive files)
+ssl/
+*.pem
+*.key
+*.crt
+*.cer
+*.p12
+*.pfx
+
+# Temporary scripts (keep only essential ones)
+deploy/upload-ssl-cert-bypass.ps1
+deploy/upload-ssl-cert-simple.ps1
+deploy/copy-ssh-key.ps1
+deploy/setup-ssh-key.ps1
