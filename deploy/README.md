@@ -163,17 +163,73 @@ sudo netstat -tlnp | grep :443
 
 ## 更新代码
 
+### 方法一：使用同步脚本（推荐）
+
+```bash
+# 在服务器上执行
+cd /var/www/my-fullstack-app
+chmod +x deploy/sync-on-server.sh
+./deploy/sync-on-server.sh
+```
+
+### 方法二：手动更新
+
 ```bash
 # 在服务器上
 cd /var/www/my-fullstack-app
-git pull origin main
 
-# 如果修改了后端代码
-sudo systemctl restart my-fullstack-app
+# 拉取最新代码
+git pull gitee main
 
-# 如果修改了前端代码
+# 更新后端依赖
+source venv/bin/activate
+cd backend
+pip install -r requirements.txt --quiet
+python init_db.py
+cd ..
+
+# 构建前端
 cd frontend
+npm install --silent
 npm run build
+cd ..
+
+# 重启服务
+sudo systemctl restart my-fullstack-app
 sudo systemctl restart nginx
+```
+
+### 解决 Git Pull 冲突
+
+如果 `git pull` 时遇到 `package-lock.json` 冲突：
+
+```bash
+# 方法一：暂存本地更改（推荐）
+git stash
+git pull gitee main
+
+# 方法二：丢弃本地更改（最简单）
+git checkout -- frontend/package-lock.json
+git pull gitee main
+```
+
+## 更新图标路径
+
+如果服务器上的图标仍然依赖外部服务，需要更新数据库中的图标路径：
+
+```bash
+# 在服务器上执行
+cd /var/www/my-fullstack-app
+chmod +x deploy/update-icons-on-server.sh
+./deploy/update-icons-on-server.sh
+```
+
+或手动执行：
+
+```bash
+cd /var/www/my-fullstack-app/backend
+source ../venv/bin/activate
+python update_icons.py
+sudo systemctl restart my-fullstack-app
 ```
 

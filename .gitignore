@@ -5,23 +5,23 @@ __pycache__/
 *.pyo
 *.pyd
 .Python
-backend/__pycache__/
+*.egg-info/
+build/
+*.so
 
 # Database
 *.db
 *.sqlite
 *.sqlite3
-backend/products.db
 
 # Node.js
 node_modules/
-frontend/node_modules/
 dist/
-frontend/dist/
 *.log
 npm-debug.log*
+yarn-error.log*
 
-# Environment
+# Environment variables
 .env
 .env.local
 .env.*.local
@@ -41,11 +41,6 @@ npm-debug.log*
 Thumbs.db
 desktop.ini
 
-# Build
-*.egg-info/
-build/
-*.so
-
 # SSL Certificates (sensitive files)
 ssl/
 *.pem
@@ -58,4 +53,3 @@ ssl/
 # Temporary files
 *.tmp
 *.bak
-*.swp

@@ -2,25 +2,13 @@
 
 .app-container {
   min-height: 100vh;
-  background: #0a0a0a;
+  background: #ffffff;
   background-image:
-    radial-gradient(at 0% 0%, rgba(0, 212, 255, 0.1) 0px, transparent 50%),
-    radial-gradient(at 100% 100%, rgba(138, 43, 226, 0.1) 0px, transparent 50%);
+    radial-gradient(at 0% 0%, rgba(59, 130, 246, 0.03) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, rgba(139, 92, 246, 0.03) 0px, transparent 50%);
   padding: 2rem 1rem;
   position: relative;
   overflow-x: hidden;
-}
-
-.app-container::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background:
-    linear-gradient(180deg, transparent 0%, rgba(0, 212, 255, 0.03) 100%);
-  pointer-events: none;
 }
 
 .app-header {
@@ -34,18 +22,17 @@
 .app-title {
   font-size: 3rem;
   font-weight: 800;
-  background: linear-gradient(135deg, #00d4ff 0%, #8a2be2 100%);
+  background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
   margin-bottom: 0.5rem;
   letter-spacing: -0.02em;
-  text-shadow: 0 0 30px rgba(0, 212, 255, 0.3);
 }
 
 .app-subtitle {
   font-size: 1rem;
-  color: rgba(255, 255, 255, 0.6);
+  color: #6b7280;
   margin: 0;
   font-weight: 300;
 }
@@ -94,7 +81,7 @@
   text-align: center;
   padding: 3rem;
   font-size: 1.25rem;
-  color: rgba(255, 255, 255, 0.7);
+  color: #6b7280;
 }
 
 .loading {
@@ -107,8 +94,8 @@
 .spinner {
   width: 40px;
   height: 40px;
-  border: 3px solid rgba(255, 255, 255, 0.1);
-  border-top-color: #00d4ff;
+  border: 3px solid #e5e7eb;
+  border-top-color: #3b82f6;
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
@@ -120,10 +107,10 @@
 }
 
 .error {
-  color: #ff6b6b;
+  color: #ef4444;
 }
 
 .empty {
-  color: rgba(255, 255, 255, 0.5);
+  color: #9ca3af;
 }
 

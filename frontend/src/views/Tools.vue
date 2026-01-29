@@ -1,12 +1,27 @@
 <script setup>
-import { ref } from 'vue'
-import Calendar from '../components/Calendar.vue'
-import Notes from '../components/Notes.vue'
+import { useRouter } from 'vue-router'
 
-const activeTool = ref('calendar') // 'calendar' or 'notes'
+const router = useRouter()
 
-const switchTool = (tool) => {
-  activeTool.value = tool
+const tools = [
+  {
+    id: 'calendar',
+    title: '万年历',
+    description: '查看日期、农历、节气等信息',
+    icon: '📅',
+    route: '/tools/calendar'
+  },
+  {
+    id: 'notes',
+    title: '便签',
+    description: '记录想法和待办事项',
+    icon: '📝',
+    route: '/tools/notes'
+  }
+]
+
+const goToTool = (route) => {
+  router.push(route)
 }
 </script>
 
@@ -17,26 +32,21 @@ const switchTool = (tool) => {
       <p class="tools-subtitle">便捷的在线工具集合</p>
     </header>
 
-    <div class="tools-tabs">
-      <button 
-        class="tool-tab" 
-        :class="{ active: activeTool === 'calendar' }"
-        @click="switchTool('calendar')"
+    <div class="tools-grid">
+      <div
+        v-for="tool in tools"
+        :key="tool.id"
+        class="tool-card"
+        @click="goToTool(tool.route)"
       >
-        📅 万年历
-      </button>
-      <button 
-        class="tool-tab" 
-        :class="{ active: activeTool === 'notes' }"
-        @click="switchTool('notes')"
-      >
-        📝 便签
-      </button>
-    </div>
-
-    <div class="tools-content">
-      <Calendar v-if="activeTool === 'calendar'" />
-      <Notes v-if="activeTool === 'notes'" />
+        <div class="tool-image">
+          <div class="tool-icon-emoji">{{ tool.icon }}</div>
+        </div>
+        <div class="tool-content">
+          <h2 class="tool-title">{{ tool.title }}</h2>
+          <p class="tool-description">{{ tool.description }}</p>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -44,10 +54,10 @@ const switchTool = (tool) => {
 <style scoped>
 .tools-container {
   min-height: 100vh;
-  background: #0a0a0a;
+  background: #ffffff;
   background-image:
-    radial-gradient(at 0% 0%, rgba(0, 212, 255, 0.1) 0px, transparent 50%),
-    radial-gradient(at 100% 100%, rgba(138, 43, 226, 0.1) 0px, transparent 50%);
+    radial-gradient(at 0% 0%, rgba(59, 130, 246, 0.03) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, rgba(139, 92, 246, 0.03) 0px, transparent 50%);
   padding: 2rem 1rem;
   position: relative;
   overflow-x: hidden;
@@ -64,7 +74,7 @@ const switchTool = (tool) => {
 .tools-title {
   font-size: 3rem;
   font-weight: 800;
-  background: linear-gradient(135deg, #00d4ff 0%, #8a2be2 100%);
+  background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -74,51 +84,105 @@ const switchTool = (tool) => {
 
 .tools-subtitle {
   font-size: 1rem;
-  color: rgba(255, 255, 255, 0.6);
+  color: #6b7280;
   margin: 0;
   font-weight: 300;
 }
 
-.tools-tabs {
-  display: flex;
-  justify-content: center;
-  gap: 1rem;
-  margin-bottom: 2rem;
-  flex-wrap: wrap;
-}
-
-.tool-tab {
-  padding: 0.75rem 2rem;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
-  color: rgba(255, 255, 255, 0.7);
-  font-size: 1rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  backdrop-filter: blur(10px);
-}
-
-.tool-tab:hover {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.2);
-  color: #ffffff;
-  transform: translateY(-2px);
-}
-
-.tool-tab.active {
-  background: rgba(0, 212, 255, 0.1);
-  border-color: #00d4ff;
-  color: #00d4ff;
-  box-shadow: 0 4px 12px rgba(0, 212, 255, 0.2);
-}
-
-.tools-content {
-  max-width: 1400px;
+.tools-grid {
+  max-width: 1600px;
   margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
   position: relative;
   z-index: 1;
+}
+
+@media (min-width: 640px) {
+  .tools-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .tools-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .tools-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+}
+
+@media (min-width: 1280px) {
+  .tools-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.25rem;
+  }
+}
+
+.tool-card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  transition: all 0.3s ease;
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+}
+
+.tool-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  border-color: #d1d5db;
+}
+
+.tool-image {
+  width: 100%;
+  height: 80px;
+  overflow: hidden;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem;
+}
+
+.tool-icon-emoji {
+  font-size: 2.5rem;
+  line-height: 1;
+}
+
+.tool-content {
+  padding: 0.75rem;
+}
+
+.tool-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 0.5rem;
+  line-height: 1.3;
+}
+
+.tool-description {
+  font-size: 0.75rem;
+  line-height: 1.4;
+  color: #6b7280;
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 @media (max-width: 768px) {
@@ -126,9 +190,16 @@ const switchTool = (tool) => {
     font-size: 2rem;
   }
   
-  .tool-tab {
-    padding: 0.6rem 1.5rem;
-    font-size: 0.9rem;
+  .tools-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .tool-card {
+    padding: 1.25rem;
+  }
+  
+  .tool-icon {
+    font-size: 2.5rem;
   }
 }
 </style>

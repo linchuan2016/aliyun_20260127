@@ -10,34 +10,18 @@
           🗑️ 删除
         </button>
         <div class="search-box">
-          <input
-            v-model="searchQuery"
-            type="text"
-            placeholder="搜索便签..."
-            class="search-input"
-          />
+          <input v-model="searchQuery" type="text" placeholder="搜索便签..." class="search-input" />
         </div>
       </div>
 
       <!-- 便签列表 -->
       <div class="notes-grid">
-        <div
-          v-for="note in filteredNotes"
-          :key="note.id"
-          class="note-card"
-          :class="{ selected: selectedNotes.includes(note.id) }"
-          @click="toggleSelect(note.id)"
-          @dblclick="editNote(note)"
-        >
+        <div v-for="note in filteredNotes" :key="note.id" class="note-card"
+          :class="{ selected: selectedNotes.includes(note.id) }" @click="toggleSelect(note.id)"
+          @dblclick="editNote(note)">
           <div class="note-header">
-            <input
-              v-if="editingNoteId === note.id"
-              v-model="editingTitle"
-              @blur="saveNote"
-              @keyup.enter="saveNote"
-              class="note-title-input"
-              @click.stop
-            />
+            <input v-if="editingNoteId === note.id" v-model="editingTitle" @blur="saveNote" @keyup.enter="saveNote"
+              class="note-title-input" @click.stop />
             <h3 v-else class="note-title">{{ note.title || '无标题' }}</h3>
             <div class="note-actions" @click.stop>
               <button class="action-btn" @click.stop="editNote(note)" title="编辑">✏️</button>
@@ -45,14 +29,8 @@
             </div>
           </div>
           <div class="note-content-wrapper">
-            <textarea
-              v-if="editingNoteId === note.id"
-              v-model="editingContent"
-              @blur="saveNote"
-              class="note-content-input"
-              @click.stop
-              placeholder="输入内容..."
-            ></textarea>
+            <textarea v-if="editingNoteId === note.id" v-model="editingContent" @blur="saveNote"
+              class="note-content-input" @click.stop placeholder="输入内容..."></textarea>
             <div v-else class="note-content" v-html="formatContent(note.content)"></div>
           </div>
           <div class="note-footer">
@@ -137,7 +115,7 @@ const editNote = (note) => {
 // 保存便签
 const saveNote = () => {
   if (!editingNoteId.value) return
-  
+
   const note = notes.value.find(n => n.id === editingNoteId.value)
   if (note) {
     note.title = editingTitle.value.trim()
@@ -165,7 +143,7 @@ const deleteSelected = () => {
 // 切换选中状态
 const toggleSelect = (id) => {
   if (editingNoteId.value) return // 编辑时不允许选择
-  
+
   const index = selectedNotes.value.indexOf(id)
   if (index > -1) {
     selectedNotes.value.splice(index, 1)
@@ -186,7 +164,7 @@ const formatDate = (dateString) => {
   const now = new Date()
   const diff = now - date
   const days = Math.floor(diff / (1000 * 60 * 60 * 24))
-  
+
   if (days === 0) {
     const hours = Math.floor(diff / (1000 * 60 * 60))
     if (hours === 0) {
@@ -209,8 +187,8 @@ const filteredNotes = computed(() => {
     return notes.value
   }
   const query = searchQuery.value.toLowerCase()
-  return notes.value.filter(note => 
-    note.title.toLowerCase().includes(query) || 
+  return notes.value.filter(note =>
+    note.title.toLowerCase().includes(query) ||
     note.content.toLowerCase().includes(query)
   )
 })
@@ -228,7 +206,7 @@ onMounted(() => {
 }
 
 .notes-container {
-  max-width: 1400px;
+  max-width: 1000px;
   width: 100%;
 }
 
@@ -241,21 +219,23 @@ onMounted(() => {
 }
 
 .toolbar-btn {
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
   border-radius: 8px;
-  color: #ffffff;
-  padding: 0.6rem 1.5rem;
-  font-size: 0.9rem;
+  color: #111827;
+  padding: 0.5rem 1.25rem;
+  font-size: 0.875rem;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.3s ease;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 .toolbar-btn:hover:not(:disabled) {
-  background: rgba(0, 212, 255, 0.2);
-  border-color: #00d4ff;
-  transform: translateY(-2px);
+  background: #f9fafb;
+  border-color: #3b82f6;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .toolbar-btn:disabled {
@@ -270,56 +250,57 @@ onMounted(() => {
 
 .search-input {
   width: 100%;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
   border-radius: 8px;
-  color: #ffffff;
-  padding: 0.6rem 1rem;
-  font-size: 0.9rem;
+  color: #111827;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
   transition: all 0.3s ease;
 }
 
 .search-input:focus {
   outline: none;
-  border-color: #00d4ff;
-  background: rgba(255, 255, 255, 0.15);
+  border-color: #3b82f6;
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
 .search-input::placeholder {
-  color: rgba(255, 255, 255, 0.5);
+  color: #9ca3af;
 }
 
 .notes-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
 }
 
 .note-card {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
   border-radius: 12px;
-  padding: 1.5rem;
+  padding: 1.25rem;
   cursor: pointer;
   transition: all 0.3s ease;
-  backdrop-filter: blur(10px);
   display: flex;
   flex-direction: column;
-  min-height: 200px;
+  min-height: 180px;
   position: relative;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .note-card:hover {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.2);
-  transform: translateY(-4px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  background: #f9fafb;
+  border-color: #d1d5db;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .note-card.selected {
-  border-color: #00d4ff;
-  background: rgba(0, 212, 255, 0.1);
-  box-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
+  border-color: #3b82f6;
+  background: rgba(59, 130, 246, 0.05);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
 .note-header {
@@ -331,9 +312,9 @@ onMounted(() => {
 }
 
 .note-title {
-  font-size: 1.1rem;
+  font-size: 1rem;
   font-weight: 600;
-  color: #ffffff;
+  color: #111827;
   margin: 0;
   flex: 1;
   overflow: hidden;
@@ -343,20 +324,21 @@ onMounted(() => {
 
 .note-title-input {
   flex: 1;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
   border-radius: 6px;
-  color: #ffffff;
+  color: #111827;
   padding: 0.5rem;
-  font-size: 1.1rem;
+  font-size: 1rem;
   font-weight: 600;
   font-family: inherit;
 }
 
 .note-title-input:focus {
   outline: none;
-  border-color: #00d4ff;
-  background: rgba(255, 255, 255, 0.15);
+  border-color: #3b82f6;
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
 .note-actions {
@@ -373,17 +355,17 @@ onMounted(() => {
 .action-btn {
   background: transparent;
   border: none;
-  color: rgba(255, 255, 255, 0.7);
+  color: #6b7280;
   cursor: pointer;
-  font-size: 1rem;
+  font-size: 0.9rem;
   padding: 0.3rem;
   border-radius: 4px;
   transition: all 0.3s ease;
 }
 
 .action-btn:hover {
-  background: rgba(255, 255, 255, 0.1);
-  color: #ffffff;
+  background: #f3f4f6;
+  color: #111827;
 }
 
 .note-content-wrapper {
@@ -392,25 +374,26 @@ onMounted(() => {
 }
 
 .note-content {
-  color: rgba(255, 255, 255, 0.8);
+  color: #374151;
   line-height: 1.6;
-  font-size: 0.95rem;
+  font-size: 0.875rem;
   overflow: hidden;
   display: -webkit-box;
   -webkit-line-clamp: 8;
+  line-clamp: 8;
   -webkit-box-orient: vertical;
   word-break: break-word;
 }
 
 .note-content-input {
   width: 100%;
-  min-height: 120px;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  min-height: 100px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
   border-radius: 6px;
-  color: #ffffff;
+  color: #111827;
   padding: 0.75rem;
-  font-size: 0.95rem;
+  font-size: 0.875rem;
   font-family: inherit;
   line-height: 1.6;
   resize: vertical;
@@ -418,24 +401,25 @@ onMounted(() => {
 
 .note-content-input:focus {
   outline: none;
-  border-color: #00d4ff;
-  background: rgba(255, 255, 255, 0.15);
+  border-color: #3b82f6;
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
 .note-footer {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.75rem;
+  color: #9ca3af;
   padding-top: 1rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  border-top: 1px solid #e5e7eb;
 }
 
 .empty-notes {
   text-align: center;
   padding: 4rem 2rem;
-  color: rgba(255, 255, 255, 0.5);
+  color: #9ca3af;
 }
 
 .empty-icon {
@@ -452,15 +436,14 @@ onMounted(() => {
   .notes-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .notes-toolbar {
     flex-direction: column;
     align-items: stretch;
   }
-  
+
   .search-box {
     min-width: 100%;
   }
 }
 </style>
-

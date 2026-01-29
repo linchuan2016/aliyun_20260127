@@ -11,6 +11,9 @@
         <router-link to="/tools" class="nav-link" :class="{ active: $route.path === '/tools' }">
           工具
         </router-link>
+        <router-link to="/rag" class="nav-link" :class="{ active: $route.path === '/rag' }">
+          RAG
+        </router-link>
       </div>
     </div>
   </nav>
@@ -25,10 +28,11 @@
   position: sticky;
   top: 0;
   z-index: 1000;
-  background: rgba(10, 10, 10, 0.8);
+  background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(10px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid #e5e7eb;
   padding: 0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .nav-container {
@@ -43,7 +47,7 @@
 .nav-logo .logo-link {
   font-size: 1.5rem;
   font-weight: 800;
-  background: linear-gradient(135deg, #00d4ff 0%, #8a2be2 100%);
+  background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -52,7 +56,7 @@
 }
 
 .nav-logo .logo-link:hover {
-  text-shadow: 0 0 20px rgba(0, 212, 255, 0.5);
+  opacity: 0.8;
 }
 
 .nav-links {
@@ -61,7 +65,7 @@
 }
 
 .nav-link {
-  color: rgba(255, 255, 255, 0.7);
+  color: #6b7280;
   text-decoration: none;
   font-size: 1rem;
   font-weight: 500;
@@ -72,13 +76,13 @@
 }
 
 .nav-link:hover {
-  color: #ffffff;
-  background: rgba(255, 255, 255, 0.05);
+  color: #111827;
+  background: #f9fafb;
 }
 
 .nav-link.active {
-  color: #00d4ff;
-  background: rgba(0, 212, 255, 0.1);
+  color: #3b82f6;
+  background: rgba(59, 130, 246, 0.1);
 }
 
 .nav-link.active::after {
@@ -89,7 +93,7 @@
   transform: translateX(-50%);
   width: 30px;
   height: 2px;
-  background: linear-gradient(90deg, #00d4ff, #8a2be2);
+  background: linear-gradient(90deg, #3b82f6, #8b5cf6);
   border-radius: 2px;
 }
 

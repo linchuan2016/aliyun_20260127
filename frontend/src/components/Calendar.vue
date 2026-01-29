@@ -25,18 +25,12 @@
 
       <!-- 日期网格 -->
       <div class="calendar-grid">
-        <div
-          v-for="(date, index) in calendarDays"
-          :key="index"
-          class="calendar-day"
-          :class="{
-            'other-month': !date.isCurrentMonth,
-            'today': date.isToday,
-            'weekend': date.isWeekend,
-            'holiday': date.isHoliday
-          }"
-          @click="selectDate(date)"
-        >
+        <div v-for="(date, index) in calendarDays" :key="index" class="calendar-day" :class="{
+          'other-month': !date.isCurrentMonth,
+          'today': date.isToday,
+          'weekend': date.isWeekend,
+          'holiday': date.isHoliday
+        }" @click="selectDate(date)">
           <div class="day-number">{{ date.day }}</div>
           <div v-if="date.lunar" class="lunar-date">{{ date.lunar }}</div>
           <div v-if="date.solarTerm" class="solar-term">{{ date.solarTerm }}</div>
@@ -73,7 +67,7 @@ const getLunarDate = (year, month, day) => {
   const lunarDays = ['初一', '初二', '初三', '初四', '初五', '初六', '初七', '初八', '初九', '初十',
     '十一', '十二', '十三', '十四', '十五', '十六', '十七', '十八', '十九', '二十',
     '廿一', '廿二', '廿三', '廿四', '廿五', '廿六', '廿七', '廿八', '廿九', '三十']
-  
+
   // 简化处理：返回一个示例农历日期
   const dayIndex = (day - 1) % 30
   const monthIndex = (month - 1) % 12
@@ -121,14 +115,14 @@ const calendarDays = computed(() => {
   const lastDay = new Date(year, month, 0)
   const daysInMonth = lastDay.getDate()
   const startDay = firstDay.getDay() === 0 ? 6 : firstDay.getDay() - 1 // 转换为周一到周日
-  
+
   const today = new Date()
   const isToday = (y, m, d) => {
     return y === today.getFullYear() && m === today.getMonth() + 1 && d === today.getDate()
   }
-  
+
   const days = []
-  
+
   // 上个月的日期
   const prevMonthLastDay = new Date(year, month - 1, 0).getDate()
   for (let i = startDay - 1; i >= 0; i--) {
@@ -146,14 +140,14 @@ const calendarDays = computed(() => {
       holiday: null
     })
   }
-  
+
   // 当前月的日期
   for (let day = 1; day <= daysInMonth; day++) {
     const date = new Date(year, month - 1, day)
     const weekday = date.getDay()
     const isWeekendDay = weekday === 0 || weekday === 6
     const holiday = getHoliday(month, day)
-    
+
     days.push({
       day,
       year,
@@ -167,7 +161,7 @@ const calendarDays = computed(() => {
       holiday
     })
   }
-  
+
   // 下个月的日期（填满6行）
   const remainingDays = 42 - days.length
   for (let day = 1; day <= remainingDays; day++) {
@@ -184,7 +178,7 @@ const calendarDays = computed(() => {
       holiday: null
     })
   }
-  
+
   return days
 })
 
@@ -235,13 +229,12 @@ onMounted(() => {
 }
 
 .calendar-container {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
   border-radius: 16px;
-  padding: 2rem;
-  backdrop-filter: blur(10px);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-  max-width: 900px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  max-width: 800px;
   width: 100%;
 }
 
@@ -262,30 +255,30 @@ onMounted(() => {
 
 .year-select,
 .month-select {
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
   border-radius: 8px;
-  color: #ffffff;
+  color: #111827;
   padding: 0.5rem 1rem;
-  font-size: 1rem;
+  font-size: 0.9rem;
   cursor: pointer;
   transition: all 0.3s ease;
 }
 
 .year-select:hover,
 .month-select:hover {
-  background: rgba(255, 255, 255, 0.15);
-  border-color: #00d4ff;
+  background: #f9fafb;
+  border-color: #3b82f6;
 }
 
 .nav-btn {
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
   border-radius: 8px;
-  color: #ffffff;
-  width: 40px;
-  height: 40px;
-  font-size: 1.5rem;
+  color: #111827;
+  width: 36px;
+  height: 36px;
+  font-size: 1.25rem;
   cursor: pointer;
   transition: all 0.3s ease;
   display: flex;
@@ -294,13 +287,13 @@ onMounted(() => {
 }
 
 .nav-btn:hover {
-  background: rgba(0, 212, 255, 0.2);
-  border-color: #00d4ff;
-  transform: scale(1.1);
+  background: #f9fafb;
+  border-color: #3b82f6;
+  transform: scale(1.05);
 }
 
 .today-btn {
-  background: linear-gradient(135deg, #00d4ff 0%, #8a2be2 100%);
+  background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
   border: none;
   border-radius: 8px;
   color: #ffffff;
@@ -313,7 +306,7 @@ onMounted(() => {
 
 .today-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 212, 255, 0.4);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
 }
 
 .weekdays {
@@ -326,9 +319,9 @@ onMounted(() => {
 .weekday {
   text-align: center;
   font-weight: 600;
-  color: rgba(255, 255, 255, 0.7);
+  color: #6b7280;
   padding: 0.5rem;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
 }
 
 .calendar-grid {
@@ -339,10 +332,10 @@ onMounted(() => {
 
 .calendar-day {
   aspect-ratio: 1;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
   border-radius: 8px;
-  padding: 0.5rem;
+  padding: 0.4rem;
   cursor: pointer;
   transition: all 0.3s ease;
   display: flex;
@@ -350,12 +343,12 @@ onMounted(() => {
   align-items: center;
   justify-content: flex-start;
   position: relative;
-  min-height: 80px;
+  min-height: 70px;
 }
 
 .calendar-day:hover {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.2);
+  background: #f3f4f6;
+  border-color: #d1d5db;
   transform: translateY(-2px);
 }
 
@@ -364,42 +357,42 @@ onMounted(() => {
 }
 
 .calendar-day.today {
-  background: rgba(0, 212, 255, 0.15);
-  border-color: #00d4ff;
-  box-shadow: 0 0 15px rgba(0, 212, 255, 0.3);
+  background: rgba(59, 130, 246, 0.1);
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
 }
 
 .calendar-day.today .day-number {
-  color: #00d4ff;
+  color: #3b82f6;
   font-weight: 700;
 }
 
 .calendar-day.weekend {
-  color: rgba(255, 100, 100, 0.8);
+  color: #ef4444;
 }
 
 .calendar-day.holiday {
-  background: rgba(255, 100, 100, 0.1);
+  background: rgba(239, 68, 68, 0.1);
 }
 
 .day-number {
-  font-size: 1.1rem;
+  font-size: 0.95rem;
   font-weight: 600;
-  color: #ffffff;
-  margin-bottom: 0.2rem;
+  color: #111827;
+  margin-bottom: 0.15rem;
 }
 
 .lunar-date {
-  font-size: 0.7rem;
-  color: rgba(255, 255, 255, 0.5);
-  margin-top: 0.2rem;
+  font-size: 0.65rem;
+  color: #9ca3af;
+  margin-top: 0.15rem;
 }
 
 .solar-term {
-  font-size: 0.65rem;
-  color: #00d4ff;
+  font-size: 0.6rem;
+  color: #3b82f6;
   font-weight: 500;
-  margin-top: 0.2rem;
+  margin-top: 0.15rem;
 }
 
 .holiday-label {
@@ -416,16 +409,16 @@ onMounted(() => {
   .calendar-container {
     padding: 1rem;
   }
-  
+
   .calendar-day {
     min-height: 60px;
     padding: 0.3rem;
   }
-  
+
   .day-number {
     font-size: 0.9rem;
   }
-  
+
   .lunar-date,
   .solar-term,
   .holiday-label {
@@ -433,4 +426,3 @@ onMounted(() => {
   }
 }
 </style>
-
