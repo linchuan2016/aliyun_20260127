@@ -55,15 +55,30 @@ const handleImageError = (event) => {
 }
 
 // 生成产品图标 URL 的辅助函数
+// 强制只使用本地路径，拒绝所有外部URL以避免依赖VPN
 const getIconUrl = (product) => {
   if (!product || !product.image_url) {
     return '/icons/placeholder.svg'
   }
-  // 如果是外部 URL，直接返回
+  // 如果包含外部URL（http/https），根据产品名称生成本地路径
   if (product.image_url.startsWith('http')) {
-    return product.image_url
+    // 根据产品名称生成本地图标路径
+    const productName = product.name || product.title?.toLowerCase().replace(/\s+/g, '')
+    if (productName) {
+      // 处理特殊名称映射
+      const iconMap = {
+        'notebooklm': 'notebooklm',
+        'huggingface': 'huggingface',
+        'toolify.ai': 'toolify',
+        'aibase': 'aibase',
+        'futurepedia': 'futurepedia'
+      }
+      const iconName = iconMap[productName] || productName
+      return `/icons/${iconName}.png`
+    }
+    return '/icons/placeholder.svg'
   }
-  // 如果是相对路径，返回
+  // 如果是相对路径，直接返回
   return product.image_url
 }
 </script>
