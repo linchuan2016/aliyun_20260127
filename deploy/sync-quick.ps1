@@ -14,7 +14,7 @@ Write-Host ""
 $allCommands = @"
 cd /var/www/my-fullstack-app
 echo '>>> 步骤 1: 处理 Git 本地修改...'
-git stash push -m backup 2>/dev/null || true
+git stash push -m backup 2>/dev/null; if [ $? -ne 0 ]; then true; fi
 echo '>>> 步骤 2: 拉取最新代码...'
 git fetch gitee main
 git reset --hard gitee/main
@@ -24,7 +24,7 @@ source ../venv/bin/activate
 pip install --upgrade pip --quiet
 pip install -r requirements.txt --quiet
 echo '>>> 步骤 4: 初始化数据库...'
-python init_db.py 2>&1 || echo '数据库初始化完成'
+python init_db.py 2>&1; if [ $? -ne 0 ]; then echo '数据库初始化完成'; fi
 echo '>>> 步骤 5: 构建前端...'
 cd ../frontend
 export NODE_OPTIONS='--max-old-space-size=2048'
@@ -40,7 +40,7 @@ echo '>>> 步骤 7: 检查服务状态...'
 systemctl status my-fullstack-app --no-pager -l | head -15
 echo ''
 echo '>>> 步骤 8: 测试 API...'
-curl -s http://127.0.0.1:8000/api/health || echo 'API 测试失败'
+curl -s http://127.0.0.1:8000/api/health; if [ $? -ne 0 ]; then echo 'API 测试失败'; fi
 "@
 
 Write-Host "正在执行同步（单次 SSH 连接）..." -ForegroundColor Yellow

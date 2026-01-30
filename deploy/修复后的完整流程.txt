@@ -1,0 +1,74 @@
+==========================================
+修复类型注解后的完整流程
+==========================================
+
+【步骤 1: 本地已修复并推送到 Gitee】
+✓ 已完成：修复 schemas.py 中的类型注解
+✓ 已完成：提交并推送到 Gitee
+
+
+【步骤 2: 在服务器上同步代码】
+
+cd /var/www/my-fullstack-app && \
+git stash push -m backup 2>/dev/null || true && \
+git fetch gitee main && \
+git reset --hard gitee/main
+
+
+【步骤 3: 验证修复（在服务器上）】
+
+cd /var/www/my-fullstack-app/backend
+source ../venv/bin/activate
+python -c "from schemas import ArticleResponse; print('Import OK')"
+
+# 如果显示 "Import OK"，说明修复成功
+
+
+【步骤 4: 重启服务】
+
+systemctl daemon-reload && \
+systemctl restart my-fullstack-app && \
+sleep 5 && \
+systemctl status my-fullstack-app --no-pager -l | head -20
+
+
+【步骤 5: 测试服务】
+
+curl http://127.0.0.1:8000/api/health
+curl http://127.0.0.1/api/health
+
+
+【完整一键流程（在服务器上执行）】
+
+cd /var/www/my-fullstack-app && \
+git stash push -m backup 2>/dev/null || true && \
+git fetch gitee main && \
+git reset --hard gitee/main && \
+cd backend && \
+source ../venv/bin/activate && \
+python -c "from schemas import ArticleResponse; print('Import OK')" && \
+cd .. && \
+systemctl daemon-reload && \
+systemctl restart my-fullstack-app && \
+sleep 5 && \
+echo "=== 服务状态 ===" && \
+systemctl status my-fullstack-app --no-pager -l | head -20 && \
+echo "" && \
+echo "=== API 测试 ===" && \
+curl -s http://127.0.0.1:8000/api/health && \
+echo "" && \
+curl -s http://127.0.0.1/api/health
+
+
+【如果验证失败，手动修复（备用方案）】
+
+cd /var/www/my-fullstack-app/backend && \
+sed -i 's/str | None/Optional[str]/g' schemas.py && \
+if ! grep -q "from typing import Optional" schemas.py; then \
+    sed -i '1s/^/from typing import Optional\n/' schemas.py; \
+fi && \
+source ../venv/bin/activate && \
+python -c "from schemas import ArticleResponse; print('Import OK')" && \
+cd .. && \
+systemctl restart my-fullstack-app
+

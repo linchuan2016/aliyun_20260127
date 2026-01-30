@@ -1,6 +1,7 @@
 """
 Pydantic 模型定义（用于请求和响应验证）
 """
+from typing import Optional
 from pydantic import BaseModel, EmailStr
 
 
@@ -85,10 +86,10 @@ class ArticleResponse(BaseModel):
     title: str
     publish_date: str
     author: str
-    original_url: str | None = None
-    category: str | None = None
-    content: str | None = None
-    excerpt: str | None = None
-    created_at: str | None = None
-    updated_at: str | None = None
+    original_url: Optional[str] = None
+    category: Optional[str] = None
+    content: Optional[str] = None
+    excerpt: Optional[str] = None
+    created_at: Optional[str] = None
+    updated_at: Optional[str] = None
 

@@ -1,0 +1,113 @@
+==========================================
+阿里云服务器启动 Web 服务命令
+==========================================
+
+【启动服务（推荐）】
+
+systemctl daemon-reload && \
+systemctl start my-fullstack-app && \
+systemctl start nginx
+
+
+【重启服务】
+
+systemctl daemon-reload && \
+systemctl restart my-fullstack-app && \
+sleep 3 && \
+systemctl restart nginx
+
+
+【检查服务状态】
+
+# 检查后端服务状态
+systemctl status my-fullstack-app --no-pager -l
+
+# 检查 Nginx 状态
+systemctl status nginx --no-pager -l
+
+# 检查两个服务状态（简洁版）
+systemctl status my-fullstack-app --no-pager -l | head -15 && \
+echo "" && \
+systemctl status nginx --no-pager -l | head -10
+
+
+【检查端口监听】
+
+# 检查端口 8000（后端）和 80（Nginx）
+netstat -tlnp | grep -E ':(80|8000)' || ss -tlnp | grep -E ':(80|8000)'
+
+
+【测试服务】
+
+# 测试后端 API（本地）
+curl http://127.0.0.1:8000/api/health
+
+# 测试通过 Nginx 访问
+curl http://127.0.0.1/api/health
+
+
+【停止服务】
+
+systemctl stop my-fullstack-app
+systemctl stop nginx
+
+
+【查看服务日志】
+
+# 查看后端服务日志（最近 50 行）
+journalctl -u my-fullstack-app -n 50 --no-pager
+
+# 实时查看后端日志
+journalctl -u my-fullstack-app -f
+
+# 查看 Nginx 错误日志
+tail -n 50 /var/log/nginx/error.log
+
+# 实时查看 Nginx 错误日志
+tail -f /var/log/nginx/error.log
+
+
+【完整启动流程（包含检查）】
+
+systemctl daemon-reload && \
+systemctl restart my-fullstack-app && \
+sleep 3 && \
+systemctl restart nginx && \
+sleep 2 && \
+echo "=== 后端服务状态 ===" && \
+systemctl status my-fullstack-app --no-pager -l | head -15 && \
+echo "" && \
+echo "=== Nginx 状态 ===" && \
+systemctl status nginx --no-pager -l | head -10 && \
+echo "" && \
+echo "=== 端口监听 ===" && \
+(netstat -tlnp | grep -E ':(80|8000)' || ss -tlnp | grep -E ':(80|8000)') && \
+echo "" && \
+echo "=== API 测试 ===" && \
+curl -s http://127.0.0.1:8000/api/health && \
+echo "" && \
+curl -s http://127.0.0.1/api/health
+
+
+【如果服务启动失败】
+
+# 查看详细错误信息
+journalctl -u my-fullstack-app -n 100 --no-pager
+
+# 手动测试后端启动
+cd /var/www/my-fullstack-app/backend
+source ../venv/bin/activate
+uvicorn main:app --host 0.0.0.0 --port 8000
+
+# 检查服务配置文件
+cat /etc/systemd/system/my-fullstack-app.service
+
+# 重新加载 systemd 配置
+systemctl daemon-reload
+
+
+【设置服务开机自启】
+
+systemctl enable my-fullstack-app
+systemctl enable nginx
+

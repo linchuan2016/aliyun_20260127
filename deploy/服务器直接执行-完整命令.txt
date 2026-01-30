@@ -1,0 +1,130 @@
+==========================================
+阿里云服务器直接执行命令（完整版）
+==========================================
+
+【完整命令（复制到服务器终端执行）】
+
+cd /var/www/my-fullstack-app && \
+git stash push -m backup 2>/dev/null || true && \
+git fetch gitee main && \
+git reset --hard gitee/main && \
+echo "=== 检查关键文件 ===" && \
+ls -lh backend/main.py backend/database.py frontend/src/main.js frontend/vite.config.js && \
+echo "=== 更新后端 ===" && \
+cd backend && \
+source ../venv/bin/activate && \
+pip install --upgrade pip --quiet && \
+pip install -r requirements.txt --quiet && \
+python init_db.py && \
+echo "=== 构建前端 ===" && \
+cd ../frontend && \
+export NODE_OPTIONS='--max-old-space-size=2048' && \
+npm install --silent && \
+npm run build && \
+echo "=== 重启服务 ===" && \
+cd .. && \
+systemctl daemon-reload && \
+systemctl restart my-fullstack-app && \
+sleep 3 && \
+systemctl restart nginx && \
+sleep 2 && \
+echo "=== 服务状态 ===" && \
+systemctl status my-fullstack-app --no-pager -l | head -15 && \
+echo "" && \
+echo "=== API 测试 ===" && \
+curl -s http://127.0.0.1:8000/api/health && \
+echo "" && \
+echo "=== 完成 ==="
+
+
+==========================================
+简化版命令（一行执行）
+==========================================
+
+cd /var/www/my-fullstack-app && git stash push -m backup 2>/dev/null || true && git fetch gitee main && git reset --hard gitee/main && cd backend && source ../venv/bin/activate && pip install --upgrade pip --quiet && pip install -r requirements.txt --quiet && python init_db.py && cd ../frontend && export NODE_OPTIONS='--max-old-space-size=2048' && npm install --silent && npm run build && cd .. && systemctl daemon-reload && systemctl restart my-fullstack-app && sleep 3 && systemctl restart nginx && sleep 2 && systemctl status my-fullstack-app --no-pager -l | head -15 && curl -s http://127.0.0.1:8000/api/health
+
+
+==========================================
+分步执行（推荐，便于查看每步结果）
+==========================================
+
+# 1. 进入项目目录
+cd /var/www/my-fullstack-app
+
+# 2. 保存本地修改并拉取代码
+git stash push -m backup 2>/dev/null || true
+git fetch gitee main
+git reset --hard gitee/main
+
+# 3. 检查关键文件
+ls -lh backend/main.py
+ls -lh frontend/src/main.js
+ls -lh frontend/vite.config.js
+
+# 4. 更新后端
+cd backend
+source ../venv/bin/activate
+pip install --upgrade pip --quiet
+pip install -r requirements.txt --quiet
+python init_db.py
+
+# 5. 构建前端
+cd ../frontend
+export NODE_OPTIONS='--max-old-space-size=2048'
+npm install --silent
+npm run build
+
+# 6. 重启服务
+cd ..
+systemctl daemon-reload
+systemctl restart my-fullstack-app
+sleep 3
+systemctl restart nginx
+
+# 7. 检查状态
+systemctl status my-fullstack-app --no-pager -l | head -15
+curl -s http://127.0.0.1:8000/api/health
+
+
+==========================================
+使用脚本执行（如果脚本已上传）
+==========================================
+
+cd /var/www/my-fullstack-app
+bash deploy/阿里云服务器直接执行命令.sh
+
+
+==========================================
+验证同步结果
+==========================================
+
+# 检查代码版本
+cd /var/www/my-fullstack-app
+git log -1 --oneline
+git status
+
+# 检查服务状态
+systemctl status my-fullstack-app --no-pager -l
+
+# 测试 API
+curl http://127.0.0.1:8000/api/health
+curl http://127.0.0.1/api/health
+
+# 检查端口
+netstat -tlnp | grep -E ':(80|8000)' || ss -tlnp | grep -E ':(80|8000)'
+
+
+==========================================
+如果遇到问题
+==========================================
+
+# 查看后端日志
+journalctl -u my-fullstack-app -n 100 --no-pager
+
+# 查看 Nginx 错误日志
+tail -n 50 /var/log/nginx/error.log
+
+# 执行修复脚本
+cd /var/www/my-fullstack-app
+bash deploy/fix-502-error.sh
+

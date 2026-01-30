@@ -1,0 +1,84 @@
+==========================================
+修复 Python 类型注解兼容性错误
+==========================================
+
+【错误说明】
+TypeError: unsupported operand type(s) for |: 'type' and 'NoneType'
+
+原因：`str | None` 语法只在 Python 3.10+ 支持
+解决：需要改为 `Optional[str]` 以兼容 Python 3.9 及更早版本
+
+
+【在服务器上修复（一键执行）】
+
+cd /var/www/my-fullstack-app/backend && \
+sed -i 's/str | None/Optional[str]/g' schemas.py && \
+sed -i 's/int | None/Optional[int]/g' schemas.py && \
+sed -i 's/bool | None/Optional[bool]/g' schemas.py && \
+sed -i '1s/^/from typing import Optional\n/' schemas.py && \
+sed -i '/^from typing import Optional$/N;/^from typing import Optional\nfrom typing import Optional$/d' schemas.py && \
+echo "修复完成，验证导入..." && \
+source ../venv/bin/activate && \
+python -c "from schemas import ArticleResponse; print('Import OK')"
+
+
+【手动修复步骤】
+
+# 1. 编辑 schemas.py 文件
+cd /var/www/my-fullstack-app/backend
+nano schemas.py
+
+# 2. 在文件开头添加导入
+from typing import Optional
+
+# 3. 将所有 `str | None` 替换为 `Optional[str]`
+# 将所有 `int | None` 替换为 `Optional[int]`
+# 将所有 `bool | None` 替换为 `Optional[bool]`
+
+# 4. 保存文件后验证
+source ../venv/bin/activate
+python -c "from schemas import ArticleResponse; print('Import OK')"
+
+
+【验证修复】
+
+cd /var/www/my-fullstack-app/backend
+source ../venv/bin/activate
+python -c "from main import app; print('Import OK')"
+
+
+【如果修复后仍有问题，检查 Python 版本】
+
+python --version
+python3 --version
+
+# 如果 Python 版本低于 3.9，需要升级 Python 或使用更兼容的语法
+
+
+【完整修复流程（包含重启服务）】
+
+cd /var/www/my-fullstack-app/backend && \
+sed -i 's/str | None/Optional[str]/g' schemas.py && \
+sed -i 's/int | None/Optional[int]/g' schemas.py && \
+sed -i 's/bool | None/Optional[bool]/g' schemas.py && \
+if ! grep -q "from typing import Optional" schemas.py; then \
+    sed -i '1s/^/from typing import Optional\n/' schemas.py; \
+fi && \
+source ../venv/bin/activate && \
+python -c "from schemas import ArticleResponse; print('Import OK')" && \
+echo "修复成功，重启服务..." && \
+cd .. && \
+systemctl daemon-reload && \
+systemctl restart my-fullstack-app && \
+sleep 5 && \
+systemctl status my-fullstack-app --no-pager -l | head -20 && \
+curl -s http://127.0.0.1:8000/api/health || echo "服务启动失败"
+
+
+【检查修复结果】
+
+# 查看修改后的文件
+grep -n "Optional\|str | None" /var/www/my-fullstack-app/backend/schemas.py
+
+# 应该看到 Optional[str]，而不是 str | None
+
