@@ -36,8 +36,8 @@ except Exception as e:
 # 生产环境：从环境变量读取允许的域名
 allowed_origins_env = os.getenv("ALLOWED_ORIGINS", "")
 if allowed_origins_env:
-    # 生产环境：使用环境变量配置的域名
-    allow_origins = [origin.strip() for origin in allowed_origins_env.split(",")]
+    # 生产环境：使用环境变量配置的域名（支持空格或逗号分隔）
+    allow_origins = [origin.strip() for origin in allowed_origins_env.replace(",", " ").split()]
 else:
     # 本地开发：允许常见的本地前端地址
     # 生产环境：如果通过Nginx代理，允许所有来源（因为Nginx会处理CORS）
