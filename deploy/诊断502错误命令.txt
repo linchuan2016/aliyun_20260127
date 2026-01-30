@@ -1,0 +1,125 @@
+==========================================
+诊断和修复 502 错误的命令集
+==========================================
+
+【方法一：使用修复脚本（推荐）】
+
+1. 上传脚本到服务器（如果还没有）:
+   scp deploy/fix-502-error.sh root@47.112.29.212:/var/www/my-fullstack-app/deploy/
+
+2. 在服务器上执行:
+   cd /var/www/my-fullstack-app
+   bash deploy/fix-502-error.sh
+
+
+【方法二：手动诊断命令（逐步执行）】
+
+# 1. 检查后端服务状态
+systemctl status my-fullstack-app --no-pager -l
+
+# 2. 检查端口 8000 是否监听
+netstat -tlnp | grep :8000
+# 或
+ss -tlnp | grep :8000
+
+# 3. 测试后端 API（本地）
+curl http://127.0.0.1:8000/api/health
+
+# 4. 查看后端服务日志
+journalctl -u my-fullstack-app -n 50 --no-pager
+
+# 5. 查看 Nginx 错误日志
+tail -n 50 /var/log/nginx/error.log
+
+# 6. 检查 Nginx 配置
+nginx -t
+
+# 7. 重启后端服务
+systemctl daemon-reload
+systemctl restart my-fullstack-app
+sleep 5
+systemctl status my-fullstack-app --no-pager -l | head -20
+
+# 8. 重启 Nginx
+systemctl restart nginx
+
+# 9. 测试通过 Nginx 访问
+curl http://127.0.0.1/api/health
+
+
+【常见问题修复】
+
+问题 1: 后端服务未运行
+解决:
+  systemctl start my-fullstack-app
+  systemctl enable my-fullstack-app  # 设置开机自启
+
+问题 2: 端口 8000 未监听
+解决:
+  # 检查服务配置
+  cat /etc/systemd/system/my-fullstack-app.service
+  
+  # 手动测试启动
+  cd /var/www/my-fullstack-app/backend
+  source ../venv/bin/activate
+  uvicorn main:app --host 0.0.0.0 --port 8000
+
+问题 3: Python 环境问题
+解决:
+  cd /var/www/my-fullstack-app/backend
+  source ../venv/bin/activate
+  python -c "from main import app; print('Import OK')"
+  
+  # 如果导入失败，重新安装依赖
+  pip install -r requirements.txt
+
+问题 4: 数据库连接问题
+解决:
+  cd /var/www/my-fullstack-app/backend
+  source ../venv/bin/activate
+  python init_db.py
+
+问题 5: Nginx 配置错误
+解决:
+  # 检查配置
+  nginx -t
+  
+  # 查看 Nginx 配置
+  cat /etc/nginx/sites-available/my-fullstack-app
+  
+  # 确保 upstream backend 指向 127.0.0.1:8000
+  grep -A 3 "upstream backend" /etc/nginx/sites-available/my-fullstack-app
+
+
+【快速修复命令（一键执行）】
+
+在服务器上执行:
+
+cd /var/www/my-fullstack-app && \
+systemctl daemon-reload && \
+systemctl stop my-fullstack-app && \
+pkill -f "uvicorn main:app" || true && \
+sleep 2 && \
+systemctl start my-fullstack-app && \
+sleep 5 && \
+systemctl restart nginx && \
+sleep 2 && \
+echo "=== 服务状态 ===" && \
+systemctl status my-fullstack-app --no-pager -l | head -15 && \
+echo "" && \
+echo "=== API 测试 ===" && \
+curl -s http://127.0.0.1:8000/api/health || echo "后端 API 不可用" && \
+curl -s http://127.0.0.1/api/health || echo "Nginx 代理失败"
+
+
+【实时监控日志】
+
+# 实时查看后端日志
+journalctl -u my-fullstack-app -f
+
+# 实时查看 Nginx 错误日志
+tail -f /var/log/nginx/error.log
+
+# 实时查看 Nginx 访问日志
+tail -f /var/log/nginx/my-fullstack-app-access.log
+
