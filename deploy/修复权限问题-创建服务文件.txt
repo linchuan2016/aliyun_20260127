@@ -1,0 +1,130 @@
+==========================================
+修复权限问题 - 创建服务文件
+==========================================
+
+【问题说明】
+Permission denied: 需要 root 权限才能写入 /etc/systemd/system/ 目录
+
+
+【使用 sudo 创建服务文件】
+
+# 方法一：使用 sudo 复制文件
+sudo cp /var/www/my-fullstack-app/deploy/my-fullstack-app.service /etc/systemd/system/
+
+# 方法二：如果部署目录中没有文件，手动创建
+sudo tee /etc/systemd/system/my-fullstack-app.service > /dev/null << 'EOF'
+[Unit]
+Description=My Fullstack App Backend Service
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/var/www/my-fullstack-app/backend
+Environment="PATH=/var/www/my-fullstack-app/venv/bin"
+Environment="HOST=0.0.0.0"
+Environment="PORT=8000"
+Environment="ALLOWED_ORIGINS=http://47.112.29.212,https://linchuan.tech,http://linchuan.tech"
+ExecStart=/var/www/my-fullstack-app/venv/bin/uvicorn main:app --host 0.0.0.0 --port 8000 --workers 4
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+
+【完整流程（使用 sudo）】
+
+# 1. 检查部署目录中的服务文件
+ls -la /var/www/my-fullstack-app/deploy/my-fullstack-app.service
+
+# 2. 复制服务文件（使用 sudo）
+sudo cp /var/www/my-fullstack-app/deploy/my-fullstack-app.service /etc/systemd/system/
+
+# 3. 更新服务配置（确保 ALLOWED_ORIGINS 正确）
+sudo sed -i 's|ALLOWED_ORIGINS=.*|ALLOWED_ORIGINS=http://47.112.29.212,https://linchuan.tech,http://linchuan.tech|g' /etc/systemd/system/my-fullstack-app.service
+
+# 4. 重新加载 systemd
+sudo systemctl daemon-reload
+
+# 5. 启用服务（开机自启）
+sudo systemctl enable my-fullstack-app
+
+# 6. 启动服务
+sudo systemctl start my-fullstack-app
+
+# 7. 等待几秒后检查状态
+sleep 5
+sudo systemctl status my-fullstack-app --no-pager -l | head -20
+
+# 8. 测试 API
+curl http://127.0.0.1:8000/api/health
+
+
+【一键执行（使用 sudo）】
+
+sudo cp /var/www/my-fullstack-app/deploy/my-fullstack-app.service /etc/systemd/system/ && \
+sudo sed -i 's|ALLOWED_ORIGINS=.*|ALLOWED_ORIGINS=http://47.112.29.212,https://linchuan.tech,http://linchuan.tech|g' /etc/systemd/system/my-fullstack-app.service && \
+sudo systemctl daemon-reload && \
+sudo systemctl enable my-fullstack-app && \
+sudo systemctl start my-fullstack-app && \
+sleep 5 && \
+echo "=== 服务状态 ===" && \
+sudo systemctl status my-fullstack-app --no-pager -l | head -20 && \
+echo "" && \
+echo "=== API 测试 ===" && \
+curl -s http://127.0.0.1:8000/api/health || echo "API不可用"
+
+
+【如果部署目录中没有服务文件，手动创建】
+
+sudo tee /etc/systemd/system/my-fullstack-app.service > /dev/null << 'EOF'
+[Unit]
+Description=My Fullstack App Backend Service
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/var/www/my-fullstack-app/backend
+Environment="PATH=/var/www/my-fullstack-app/venv/bin"
+Environment="HOST=0.0.0.0"
+Environment="PORT=8000"
+Environment="ALLOWED_ORIGINS=http://47.112.29.212,https://linchuan.tech,http://linchuan.tech"
+ExecStart=/var/www/my-fullstack-app/venv/bin/uvicorn main:app --host 0.0.0.0 --port 8000 --workers 4
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+sudo systemctl daemon-reload
+sudo systemctl enable my-fullstack-app
+sudo systemctl start my-fullstack-app
+sleep 5
+sudo systemctl status my-fullstack-app --no-pager -l | head -20
+
+
+【验证服务文件】
+
+# 查看服务文件内容
+cat /etc/systemd/system/my-fullstack-app.service
+
+# 检查服务是否已注册
+sudo systemctl list-unit-files | grep my-fullstack-app
+
+
+【如果服务启动失败，查看日志】
+
+sudo journalctl -u my-fullstack-app -n 100 --no-pager
+
+
+【检查文件权限】
+
+ls -la /etc/systemd/system/my-fullstack-app.service
+
+# 应该显示类似：
+# -rw-r--r-- 1 root root ... my-fullstack-app.service
+

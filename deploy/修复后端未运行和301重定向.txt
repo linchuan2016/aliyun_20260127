@@ -1,0 +1,134 @@
+==========================================
+修复后端未运行和 301 重定向问题
+==========================================
+
+【问题分析】
+1. 后端服务未运行：端口 8000 连接被拒绝
+2. Nginx 301 重定向：可能是 HTTPS 强制重定向配置问题
+
+
+【完整诊断和修复流程】
+
+# 1. 检查后端服务状态
+systemctl status my-fullstack-app --no-pager -l
+
+# 2. 检查端口监听
+netstat -tlnp | grep :8000 || ss -tlnp | grep :8000
+
+# 3. 查看后端日志
+journalctl -u my-fullstack-app -n 50 --no-pager
+
+# 4. 启动后端服务
+systemctl daemon-reload
+systemctl start my-fullstack-app
+sleep 5
+
+# 5. 检查后端服务状态
+systemctl status my-fullstack-app --no-pager -l | head -20
+
+# 6. 测试后端 API
+curl http://127.0.0.1:8000/api/health
+
+# 7. 检查 Nginx 配置（301 重定向问题）
+grep -r "return 301" /etc/nginx/
+cat /etc/nginx/sites-available/my-fullstack-app
+cat /etc/nginx/sites-enabled/my-fullstack-app
+
+# 8. 测试 Nginx 代理
+curl -L http://127.0.0.1/api/health
+
+
+【一键修复命令（推荐）】
+
+systemctl daemon-reload && \
+systemctl stop my-fullstack-app && \
+pkill -f "uvicorn main:app" || true && \
+sleep 2 && \
+systemctl start my-fullstack-app && \
+sleep 5 && \
+echo "=== 后端服务状态 ===" && \
+systemctl status my-fullstack-app --no-pager -l | head -20 && \
+echo "" && \
+echo "=== 端口监听 ===" && \
+(netstat -tlnp | grep :8000 || ss -tlnp | grep :8000 || echo "端口未监听") && \
+echo "" && \
+echo "=== 后端 API 测试 ===" && \
+curl -s http://127.0.0.1:8000/api/health || echo "后端API不可用" && \
+echo "" && \
+echo "=== Nginx 代理测试 ===" && \
+curl -sL http://127.0.0.1/api/health || echo "Nginx代理失败"
+
+
+【如果后端服务启动失败，检查原因】
+
+# 查看详细日志
+journalctl -u my-fullstack-app -n 100 --no-pager
+
+# 检查 Python 环境
+cd /var/www/my-fullstack-app/backend
+source ../venv/bin/activate
+python -c "from main import app; print('Import OK')"
+
+# 手动测试启动
+uvicorn main:app --host 0.0.0.0 --port 8000
+
+
+【修复 301 重定向问题】
+
+# 检查 Nginx 配置中的重定向规则
+grep -A 5 -B 5 "return 301\|rewrite.*https" /etc/nginx/sites-available/my-fullstack-app
+
+# 如果发现强制 HTTPS 重定向，可以临时注释掉进行测试
+# 或者确保使用 HTTPS 访问：
+curl https://127.0.0.1/api/health
+
+# 检查 Nginx 错误日志
+tail -n 30 /var/log/nginx/error.log
+
+
+【检查服务文件是否存在】
+
+ls -la /etc/systemd/system/my-fullstack-app.service
+
+# 如果不存在，从部署目录复制
+cp /var/www/my-fullstack-app/deploy/my-fullstack-app.service /etc/systemd/system/
+systemctl daemon-reload
+systemctl enable my-fullstack-app
+systemctl start my-fullstack-app
+
+
+【完整修复流程（包含服务文件检查）】
+
+# 检查并创建服务文件
+if [ ! -f /etc/systemd/system/my-fullstack-app.service ]; then
+    echo "服务文件不存在，正在创建..."
+    if [ -f /var/www/my-fullstack-app/deploy/my-fullstack-app.service ]; then
+        cp /var/www/my-fullstack-app/deploy/my-fullstack-app.service /etc/systemd/system/
+    else
+        echo "需要手动创建服务文件"
+        exit 1
+    fi
+fi
+
+# 更新服务配置
+sed -i 's|ALLOWED_ORIGINS=.*|ALLOWED_ORIGINS=http://47.112.29.212,https://linchuan.tech,http://linchuan.tech|g' /etc/systemd/system/my-fullstack-app.service
+
+# 启动服务
+systemctl daemon-reload
+systemctl enable my-fullstack-app
+systemctl start my-fullstack-app
+sleep 5
+
+# 检查状态
+systemctl status my-fullstack-app --no-pager -l | head -20
+curl -s http://127.0.0.1:8000/api/health || echo "后端API不可用"
+
+
+【实时监控】
+
+# 实时查看后端日志
+journalctl -u my-fullstack-app -f
+
+# 实时查看 Nginx 错误日志
+tail -f /var/log/nginx/error.log
+

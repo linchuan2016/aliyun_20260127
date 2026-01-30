@@ -1,5 +1,6 @@
 import os
 from datetime import timedelta
+from typing import List
 from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordRequestForm
@@ -323,7 +324,7 @@ async def setup_admin_user(
 
 # ==================== 备忘录相关路由 ====================
 
-@app.get("/api/memos", response_model=list[MemoResponse])
+@app.get("/api/memos", response_model=List[MemoResponse])
 async def get_memos(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_active_user)
@@ -418,7 +419,7 @@ async def delete_memo(
 
 # ==================== 文章相关路由 ====================
 
-@app.get("/api/articles", response_model=list[ArticleResponse])
+@app.get("/api/articles", response_model=List[ArticleResponse])
 async def get_articles(
     skip: int = 0,
     limit: int = 100,
