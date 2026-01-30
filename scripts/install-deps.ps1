@@ -7,7 +7,8 @@ Write-Host ""
 Write-Host "Installing backend dependencies..." -ForegroundColor Cyan
 Write-Host ""
 
-$projectRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
+# 获取项目根目录（脚本在 scripts 文件夹中）
+$projectRoot = Split-Path -Parent (Split-Path -Parent $MyInvocation.MyCommand.Path)
 $backendPath = Join-Path $projectRoot "backend"
 $venvPath = Join-Path $projectRoot "venv"
 $venvPython = Join-Path $venvPath "Scripts\python.exe"

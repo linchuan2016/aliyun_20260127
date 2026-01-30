@@ -3,9 +3,9 @@
   line-height: 1.5;
   font-weight: 400;
 
-  color-scheme: dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #0a0a0a;
+  color-scheme: light;
+  color: #111827;
+  background-color: #ffffff;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -19,21 +19,21 @@
 
 a {
   font-weight: 500;
-  color: #00d4ff;
+  color: #3b82f6;
   text-decoration: inherit;
   transition: color 0.2s ease;
 }
 
 a:hover {
-  color: #8a2be2;
+  color: #2563eb;
 }
 
 body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
-  background: #0a0a0a;
-  color: rgba(255, 255, 255, 0.87);
+  background: #ffffff;
+  color: #111827;
 }
 
 h1 {
@@ -48,20 +48,20 @@ button {
   font-size: 1em;
   font-weight: 500;
   font-family: inherit;
-  background-color: rgba(255, 255, 255, 0.1);
-  color: #ffffff;
+  background-color: #f9fafb;
+  color: #111827;
   cursor: pointer;
   transition: all 0.25s ease;
 }
 
 button:hover {
-  background-color: rgba(255, 255, 255, 0.2);
-  border-color: #00d4ff;
+  background-color: #f3f4f6;
+  border-color: #3b82f6;
 }
 
 button:focus,
 button:focus-visible {
-  outline: 2px solid #00d4ff;
+  outline: 2px solid #3b82f6;
   outline-offset: 2px;
 }
 
@@ -73,7 +73,7 @@ button:focus-visible {
   width: 100%;
   margin: 0;
   padding: 0;
-  background: #0a0a0a;
+  background: #ffffff;
 }
 
 /* 滚动条样式 */
@@ -82,14 +82,14 @@ button:focus-visible {
 }
 
 ::-webkit-scrollbar-track {
-  background: #1a1a1a;
+  background: #f9fafb;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(0, 0, 0, 0.2);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.3);
+  background: rgba(0, 0, 0, 0.3);
 }

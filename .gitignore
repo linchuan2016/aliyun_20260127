@@ -53,3 +53,20 @@ ssl/
 # Temporary files
 *.tmp
 *.bak
+*.swp
+*.swo
+*~
+
+# Scripts folder (optional - uncomment if you want to ignore scripts)
+# scripts/*.ps1
+# !scripts/README.md
+
+# Development/Admin helper scripts (contain sensitive operations)
+# These scripts are for local development only and should not be committed
+backend/create_admin.py
+backend/create_admin_simple.py
+backend/init_admin.py
+backend/update_admin_password.py
+backend/update_icons.py
+backend/delete_admin.py
+backend/add_article.py

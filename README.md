@@ -87,6 +87,15 @@ npm run dev
 .\start-local.ps1
 ```
 
+#### 4. 初始化管理员账号
+
+首次启动后，访问 `http://localhost:5173/admin` 会自动跳转到管理员设置页面。
+
+**安全说明：**
+- 管理员密码不会硬编码在代码中
+- 首次访问时通过 web 界面设置管理员密码
+- 所有辅助脚本（如 `create_admin.py`）已配置为不提交到 git
+
 ## 数据库
 
 ### 本地开发（SQLite）
@@ -108,10 +117,23 @@ python init_db.py
 
 ## API 接口
 
+### 公开接口
 - `GET /api/products` - 获取所有产品列表
 - `GET /api/products/{product_name}` - 获取单个产品信息
+- `GET /api/articles` - 获取文章列表
 - `GET /api/health` - 健康检查
-- `GET /api/data` - 测试接口
+
+### 认证接口
+- `POST /api/auth/register` - 用户注册
+- `POST /api/auth/login` - 用户登录
+- `POST /api/auth/login-json` - 用户登录（JSON格式）
+- `GET /api/auth/me` - 获取当前用户信息
+
+### 管理员接口
+- `GET /api/admin/check` - 检查管理员是否存在
+- `POST /api/admin/setup` - 设置管理员密码（仅首次可用）
+- `GET /api/admin/users` - 获取用户列表（需登录）
+- `GET /api/admin/articles` - 获取文章列表（需登录）
 
 API 文档：http://127.0.0.1:8000/docs
 

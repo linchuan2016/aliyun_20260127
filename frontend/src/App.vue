@@ -12,6 +12,6 @@ import Navigation from './components/Navigation.vue'
 <style>
 .app-wrapper {
   min-height: 100vh;
-  background: #0a0a0a;
+  background: #ffffff;
 }
 </style>

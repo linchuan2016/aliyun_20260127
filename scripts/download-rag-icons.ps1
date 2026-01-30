@@ -1,7 +1,9 @@
 # Download RAG vector database icons script
 $ErrorActionPreference = "Stop"
 
-$iconsDir = "frontend\public\icons"
+# 获取项目根目录（脚本在 scripts 文件夹中）
+$projectRoot = Split-Path -Parent (Split-Path -Parent $MyInvocation.MyCommand.Path)
+$iconsDir = Join-Path $projectRoot "frontend\public\icons"
 
 # RAG vector database list with Google Favicon API URLs
 $vectorDBs = @(
