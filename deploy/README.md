@@ -13,13 +13,140 @@
 
 - **`nginx.conf`** - HTTP 版本的 Nginx 配置
 - **`nginx-ssl.conf`** - HTTPS 版本的 Nginx 配置（包含 SSL 证书配置）
+- **`nginx-attu.conf`** - Attu 管理界面的 Nginx 反向代理配置
 
-### 部署脚本
+### Milvus 和 Attu 部署
+
+- **`milvus-docker-compose.yml`** - Milvus 和 Attu 的 Docker Compose 配置文件
+- **`deploy-milvus-aliyun-complete.sh`** - 一键完整部署脚本（推荐使用）
+- **`deploy-milvus.sh`** - 基础部署脚本（需要已安装 Docker）
+- **`quick-deploy-milvus.sh`** - 快速部署脚本（自动安装 Docker）
+- **`install-docker-aliyun.sh`** - Docker 安装脚本（使用阿里云镜像源）
+- **`install-docker-compose.sh`** - Docker Compose 安装脚本
+- **`configure-firewall.sh`** - 防火墙配置脚本
+- **`verify-milvus-deployment.sh`** - 部署验证脚本
+- **`DEPLOY_MILVUS_ALIYUN.md`** - 详细的阿里云部署指南
+- **`DEPLOY_MILVUS.md`** - 通用部署指南
+
+### 其他部署脚本
 
 - **`apply-ssl-complete-fixed.sh`** - 一键应用 SSL 配置的脚本（在服务器上执行）
 - **`upload-ssl-cert.bat`** - Windows 下上传 SSL 证书的批处理脚本
 - **`upload-ssl-cert.ps1`** - PowerShell 版本的 SSL 证书上传脚本
 - **`sync-to-server.ps1`** - 代码同步到服务器的脚本
+
+## Milvus 和 Attu 部署（阿里云）
+
+### 方法一：一键完整部署（推荐）
+
+```bash
+# 在服务器上执行
+cd /var/www/my-fullstack-app
+git pull gitee main
+
+# 执行完整部署脚本（会自动安装 Docker、配置防火墙、启动服务）
+chmod +x deploy/deploy-milvus-aliyun-complete.sh
+sudo ./deploy/deploy-milvus-aliyun-complete.sh
+```
+
+### 方法二：分步部署
+
+```bash
+# 1. 安装 Docker（如果未安装）
+chmod +x deploy/install-docker-aliyun.sh
+sudo ./deploy/install-docker-aliyun.sh
+
+# 2. 安装 Docker Compose（如果未安装）
+chmod +x deploy/install-docker-compose.sh
+sudo ./deploy/install-docker-compose.sh
+
+# 3. 配置防火墙
+chmod +x deploy/configure-firewall.sh
+sudo ./deploy/configure-firewall.sh
+
+# 4. 部署 Milvus 和 Attu
+chmod +x deploy/deploy-milvus.sh
+sudo ./deploy/deploy-milvus.sh
+```
+
+### 验证部署
+
+```bash
+# 验证部署状态
+chmod +x deploy/verify-milvus-deployment.sh
+./deploy/verify-milvus-deployment.sh
+```
+
+### 访问服务
+
+- **Attu 管理界面**: `http://YOUR_SERVER_IP:3000`
+- **Milvus API**: `localhost:19530` 或 `YOUR_SERVER_IP:19530`
+- **MinIO 控制台**: `http://YOUR_SERVER_IP:9001`
+
+首次访问 Attu 时：
+1. 打开 `http://YOUR_SERVER_IP:3000`
+2. Milvus 地址填写：`milvus-standalone:19530`（容器内）或 `localhost:19530`（外部）
+3. 用户名和密码留空（默认配置）
+
+### 服务管理
+
+```bash
+cd /opt/milvus
+
+# 查看服务状态
+docker-compose ps
+
+# 查看日志
+docker-compose logs -f
+
+# 重启服务
+docker-compose restart
+
+# 停止服务
+docker-compose down
+
+# 停止并删除数据（谨慎操作）
+docker-compose down -v
+```
+
+### 配置 Nginx 反向代理（可选）
+
+如果需要通过域名访问 Attu：
+
+```bash
+# 复制 Nginx 配置
+sudo cp deploy/nginx-attu.conf /etc/nginx/conf.d/attu.conf
+
+# 编辑配置文件，修改 server_name
+sudo nano /etc/nginx/conf.d/attu.conf
+
+# 测试配置
+sudo nginx -t
+
+# 重启 Nginx
+sudo systemctl restart nginx
+```
+
+### 常见问题
+
+1. **端口无法访问**
+   - 检查防火墙：`sudo firewall-cmd --list-ports`
+   - 检查阿里云安全组是否开放端口 3000 和 19530
+   - 运行 `deploy/configure-firewall.sh` 配置防火墙
+
+2. **服务启动失败**
+   - 查看日志：`cd /opt/milvus && docker-compose logs -f`
+   - 检查内存：`free -h`（Milvus 需要至少 2GB 内存）
+
+3. **Docker 镜像下载慢**
+   - 脚本已配置阿里云镜像加速
+   - 如果仍有问题，检查 `/etc/docker/daemon.json`
+
+详细说明请参考：
+- `DEPLOY_MILVUS_ALIYUN.md` - 阿里云部署详细指南
+- `DEPLOY_MILVUS.md` - 通用部署指南
+
+---
 
 ## 快速部署流程
 
