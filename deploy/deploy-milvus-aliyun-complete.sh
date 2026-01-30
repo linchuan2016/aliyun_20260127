@@ -30,7 +30,16 @@ COMPOSE_FILE="$MILVUS_DIR/docker-compose.yml"
 echo -e "${GREEN}步骤 1: 检查 Docker...${NC}"
 if ! command -v docker &> /dev/null; then
     echo "Docker 未安装，开始安装..."
-    if [ -f "$PROJECT_DIR/deploy/install-docker-aliyun.sh" ]; then
+    
+    # 检查内存
+    AVAIL_MEM=$(free -m | awk '/^Mem:/{print $7}' 2>/dev/null || echo "1000")
+    echo "可用内存: ${AVAIL_MEM}MB"
+    
+    if [ "$AVAIL_MEM" -lt 500 ] && [ -f "$PROJECT_DIR/deploy/install-docker-aliyun-low-memory.sh" ]; then
+        echo -e "${YELLOW}内存较低，使用低内存优化安装脚本...${NC}"
+        chmod +x "$PROJECT_DIR/deploy/install-docker-aliyun-low-memory.sh"
+        sudo "$PROJECT_DIR/deploy/install-docker-aliyun-low-memory.sh"
+    elif [ -f "$PROJECT_DIR/deploy/install-docker-aliyun.sh" ]; then
         chmod +x "$PROJECT_DIR/deploy/install-docker-aliyun.sh"
         sudo "$PROJECT_DIR/deploy/install-docker-aliyun.sh"
     else

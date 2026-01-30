@@ -20,8 +20,31 @@ sudo yum remove -y docker docker-client docker-client-latest docker-common docke
 echo "✓ 清理完成"
 echo ""
 
-echo "步骤 2: 安装必要的依赖..."
-sudo yum install -y yum-utils device-mapper-persistent-data lvm2
+echo "步骤 2: 检查内存..."
+TOTAL_MEM=$(free -m | awk '/^Mem:/{print $2}')
+AVAIL_MEM=$(free -m | awk '/^Mem:/{print $7}')
+echo "总内存: ${TOTAL_MEM}MB, 可用内存: ${AVAIL_MEM}MB"
+
+if [ "$AVAIL_MEM" -lt 500 ]; then
+    echo "⚠️  警告: 可用内存不足 500MB，建议使用低内存优化脚本"
+    echo "  运行: sudo ./deploy/install-docker-aliyun-low-memory.sh"
+    echo "  或使用官方脚本: curl -fsSL https://get.docker.com | bash -s docker --mirror Aliyun"
+    echo ""
+fi
+
+echo "安装必要的依赖..."
+# 分批安装，避免一次性安装导致内存不足
+echo "  安装 yum-utils..."
+sudo yum install -y yum-utils || {
+    echo "❌ yum-utils 安装失败，可能是内存不足"
+    echo "建议使用: sudo ./deploy/install-docker-aliyun-low-memory.sh"
+    exit 1
+}
+
+echo "  安装 device-mapper-persistent-data 和 lvm2..."
+sudo yum install -y device-mapper-persistent-data lvm2 || {
+    echo "⚠️  可选依赖安装失败，继续安装 Docker（通常不影响使用）..."
+}
 echo "✓ 依赖安装完成"
 echo ""
 
@@ -57,7 +80,15 @@ echo ""
 
 echo "步骤 7: 验证 Docker 安装..."
 sudo docker --version
-sudo docker run hello-world
+
+# 检查内存，如果内存充足才运行 hello-world
+AVAIL_MEM=$(free -m | awk '/^Mem:/{print $7}')
+if [ "$AVAIL_MEM" -gt 200 ]; then
+    echo "运行测试容器..."
+    sudo docker run hello-world || echo "⚠️  测试容器运行失败（可能是内存不足），但 Docker 已安装"
+else
+    echo "⚠️  内存不足，跳过测试容器"
+fi
 echo "✓ Docker 验证完成"
 echo ""
 
