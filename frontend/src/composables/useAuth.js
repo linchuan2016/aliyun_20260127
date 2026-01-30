@@ -1,7 +1,8 @@
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 
-const API_BASE_URL = 'http://127.0.0.1:8000'
+// 生产环境使用相对路径，开发环境使用完整URL
+const API_BASE_URL = import.meta.env.PROD ? '' : 'http://127.0.0.1:8000'
 
 // 全局状态
 const token = ref(localStorage.getItem('token') || null)

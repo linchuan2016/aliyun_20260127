@@ -39,11 +39,15 @@ if allowed_origins_env:
     allow_origins = [origin.strip() for origin in allowed_origins_env.split(",")]
 else:
     # 本地开发：允许常见的本地前端地址
+    # 生产环境：如果通过Nginx代理，允许所有来源（因为Nginx会处理CORS）
     allow_origins = [
         "http://localhost:5173",
         "http://127.0.0.1:5173",
         "http://localhost:3000",
         "http://127.0.0.1:3000",
+        "http://47.112.29.212",
+        "https://linchuan.tech",
+        "http://linchuan.tech",
     ]
 
 app.add_middleware(

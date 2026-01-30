@@ -56,13 +56,8 @@
               <td class="date-cell">{{ formatDate(article.publish_date) }}</td>
               <td class="author-cell">{{ article.author }}</td>
               <td class="url-cell">
-                <a
-                  v-if="article.original_url"
-                  :href="article.original_url"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="original-link"
-                >
+                <a v-if="article.original_url" :href="article.original_url" target="_blank" rel="noopener noreferrer"
+                  class="original-link">
                   查看原文 →
                 </a>
                 <span v-else class="no-url">-</span>
@@ -82,7 +77,8 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 
-const API_BASE_URL = 'http://127.0.0.1:8000'
+// 生产环境使用相对路径，开发环境使用完整URL
+const API_BASE_URL = import.meta.env.PROD ? '' : 'http://127.0.0.1:8000'
 
 const articles = ref([])
 const loading = ref(true)
@@ -93,7 +89,7 @@ const sortOrder = ref('desc')
 const fetchArticles = async () => {
   loading.value = true
   error.value = ''
-  
+
   try {
     const response = await fetch(
       `${API_BASE_URL}/api/articles?order_by=${sortField.value}&order=${sortOrder.value}`
@@ -312,7 +308,9 @@ onMounted(() => {
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .error-cell {

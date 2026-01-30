@@ -9,26 +9,13 @@
       <form @submit.prevent="handleSetup" class="admin-setup-form">
         <div class="form-group">
           <label for="password">管理员密码</label>
-          <input
-            id="password"
-            v-model="password"
-            type="password"
-            placeholder="请输入管理员密码"
-            required
-            :disabled="loading"
-          />
+          <input id="password" v-model="password" type="password" placeholder="请输入管理员密码" required :disabled="loading" />
         </div>
 
         <div class="form-group">
           <label for="confirmPassword">确认密码</label>
-          <input
-            id="confirmPassword"
-            v-model="confirmPassword"
-            type="password"
-            placeholder="请再次输入密码"
-            required
-            :disabled="loading"
-          />
+          <input id="confirmPassword" v-model="confirmPassword" type="password" placeholder="请再次输入密码" required
+            :disabled="loading" />
         </div>
 
         <div v-if="error" class="error-message">
@@ -58,7 +45,8 @@ import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
-const API_BASE_URL = 'http://127.0.0.1:8000'
+// 生产环境使用相对路径，开发环境使用完整URL
+const API_BASE_URL = import.meta.env.PROD ? '' : 'http://127.0.0.1:8000'
 
 const password = ref('')
 const confirmPassword = ref('')
@@ -117,7 +105,7 @@ const handleSetup = async () => {
     }
 
     success.value = '管理员密码设置成功！正在跳转到登录页面...'
-    
+
     // 等待2秒后跳转到登录页面
     setTimeout(() => {
       router.push('/admin/login')
@@ -272,4 +260,3 @@ const handleSetup = async () => {
   text-decoration: underline;
 }
 </style>
-

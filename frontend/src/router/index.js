@@ -101,7 +101,8 @@ router.beforeEach(async (to, from, next) => {
   // 如果是管理员相关页面，先检查admin是否存在
   if (to.path.startsWith('/admin')) {
     try {
-      const response = await fetch('http://127.0.0.1:8000/api/admin/check')
+          const API_BASE_URL = import.meta.env.PROD ? '' : 'http://127.0.0.1:8000'
+          const response = await fetch(`${API_BASE_URL}/api/admin/check`)
       const data = await response.json()
       if (!data.exists) {
         // 如果admin不存在，且不是访问setup页面，则跳转到setup页面

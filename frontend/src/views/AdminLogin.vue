@@ -9,26 +9,12 @@
       <form @submit.prevent="handleLogin" class="admin-login-form">
         <div class="form-group">
           <label for="username">用户名</label>
-          <input
-            id="username"
-            v-model="username"
-            type="text"
-            placeholder="请输入管理员用户名"
-            required
-            :disabled="loading"
-          />
+          <input id="username" v-model="username" type="text" placeholder="请输入管理员用户名" required :disabled="loading" />
         </div>
 
         <div class="form-group">
           <label for="password">密码</label>
-          <input
-            id="password"
-            v-model="password"
-            type="password"
-            placeholder="请输入管理员密码"
-            required
-            :disabled="loading"
-          />
+          <input id="password" v-model="password" type="password" placeholder="请输入管理员密码" required :disabled="loading" />
         </div>
 
         <div v-if="error" class="error-message">
@@ -56,7 +42,8 @@ import { useAuth } from '../composables/useAuth'
 
 const router = useRouter()
 const { login } = useAuth()
-const API_BASE_URL = 'http://127.0.0.1:8000'
+// 生产环境使用相对路径，开发环境使用完整URL
+const API_BASE_URL = import.meta.env.PROD ? '' : 'http://127.0.0.1:8000'
 
 const username = ref('Admin')
 const password = ref('')
@@ -82,7 +69,7 @@ onMounted(() => {
 
 const handleLogin = async () => {
   error.value = ''
-  
+
   // 管理员登录不需要密码长度验证
 
   loading.value = true
@@ -242,4 +229,3 @@ const handleLogin = async () => {
   text-decoration: underline;
 }
 </style>
-
