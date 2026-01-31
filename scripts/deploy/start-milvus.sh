@@ -113,11 +113,12 @@ echo ""
 
 echo "步骤 7: 检查服务状态..."
 cd $MILVUS_DIR
-if command -v docker-compose &> /dev/null; then
-    docker-compose ps
-else
-    docker compose ps
-fi
+# 使用 docker ps 代替 docker-compose ps（避免 Segmentation fault）
+echo "容器状态:"
+docker ps --filter "name=milvus" --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}" || {
+    echo "使用 docker compose ps..."
+    docker compose ps 2>/dev/null || echo "⚠️  无法查看容器状态，请手动检查: docker ps"
+}
 echo ""
 
 # 获取服务器 IP
