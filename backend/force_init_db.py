@@ -42,7 +42,6 @@ def force_init():
             if book_count == 0:
                 print("初始化书籍数据...")
                 from datetime import datetime
-                from models import Book
                 
                 # 添加《异类》
                 book1 = Book(
