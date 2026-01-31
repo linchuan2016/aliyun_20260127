@@ -31,7 +31,23 @@ sudo systemctl stop docker
 sleep 5
 sudo systemctl start docker
 sleep 10
-echo "✓ 镜像源已配置"
+
+# 确保 Docker 正在运行
+echo "确保 Docker 正在运行..."
+if ! sudo systemctl is-active --quiet docker; then
+    echo "⚠️  Docker 未运行，正在启动..."
+    sudo systemctl start docker
+    sleep 10
+fi
+
+# 验证 Docker 连接
+if ! sudo docker ps &>/dev/null; then
+    echo "❌ Docker 无法连接，尝试重启..."
+    sudo systemctl restart docker
+    sleep 10
+fi
+
+echo "✓ 镜像源已配置，Docker 已就绪"
 echo ""
 
 # 验证配置
