@@ -25,6 +25,30 @@ if ! command -v docker-compose &> /dev/null && ! docker compose version &> /dev/
     exit 1
 fi
 
+# 检查并配置 Docker 镜像加速
+echo "检查 Docker 镜像加速配置..."
+if [ ! -f /etc/docker/daemon.json ] || ! grep -q "registry-mirrors" /etc/docker/daemon.json 2>/dev/null; then
+    echo "配置 Docker 镜像加速..."
+    sudo mkdir -p /etc/docker
+    sudo tee /etc/docker/daemon.json <<-'EOF'
+{
+  "registry-mirrors": [
+    "https://registry.cn-hangzhou.aliyuncs.com",
+    "https://docker.mirrors.ustc.edu.cn",
+    "https://dockerhub.azk8s.cn",
+    "https://reg-mirror.qiniu.com"
+  ]
+}
+EOF
+    sudo systemctl daemon-reload
+    sudo systemctl restart docker
+    echo "✓ 镜像加速配置完成，Docker 已重启"
+    sleep 3
+else
+    echo "✓ 镜像加速已配置"
+fi
+echo ""
+
 # 设置部署目录
 MILVUS_DIR="/opt/milvus"
 PROJECT_DIR="/var/www/my-fullstack-app"
