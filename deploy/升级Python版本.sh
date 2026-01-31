@@ -51,8 +51,57 @@ if [ -d "Python-$PYTHON_VERSION" ]; then
     rm -rf "Python-$PYTHON_VERSION"
 fi
 
-wget "https://www.python.org/ftp/python/$PYTHON_VERSION/Python-$PYTHON_VERSION.tgz"
-tar -xzf "Python-$PYTHON_VERSION.tgz"
+# 优先使用国内镜像（更快）
+PYTHON_FILE="Python-$PYTHON_VERSION.tgz"
+EXPECTED_SIZE=26111363
+
+# 检查文件是否已存在且完整
+if [ -f "$PYTHON_FILE" ]; then
+    CURRENT_SIZE=$(stat -c%s "$PYTHON_FILE" 2>/dev/null || stat -f%z "$PYTHON_FILE" 2>/dev/null || echo "0")
+    if [ "$CURRENT_SIZE" -eq "$EXPECTED_SIZE" ] && tar -tzf "$PYTHON_FILE" > /dev/null 2>&1; then
+        echo "✓ 文件已存在且完整，跳过下载"
+    else
+        echo "文件不完整，重新下载..."
+        rm -f "$PYTHON_FILE"
+    fi
+fi
+
+# 如果文件不存在，尝试下载
+if [ ! -f "$PYTHON_FILE" ]; then
+    echo "尝试使用国内镜像下载（更快）..."
+    MIRRORS=(
+        "https://mirrors.huaweicloud.com/python/$PYTHON_VERSION/$PYTHON_FILE"
+        "https://mirrors.aliyun.com/python-release/$PYTHON_VERSION/$PYTHON_FILE"
+        "https://mirror.baidu.com/python/$PYTHON_VERSION/$PYTHON_FILE"
+        "https://www.python.org/ftp/python/$PYTHON_VERSION/$PYTHON_FILE"
+    )
+    
+    SUCCESS=false
+    for MIRROR_URL in "${MIRRORS[@]}"; do
+        echo "尝试: $MIRROR_URL"
+        if wget --timeout=10 --tries=2 -O "$PYTHON_FILE" "$MIRROR_URL" 2>&1 | tail -5; then
+            DOWNLOADED_SIZE=$(stat -c%s "$PYTHON_FILE" 2>/dev/null || stat -f%z "$PYTHON_FILE" 2>/dev/null || echo "0")
+            if [ "$DOWNLOADED_SIZE" -eq "$EXPECTED_SIZE" ] && tar -tzf "$PYTHON_FILE" > /dev/null 2>&1; then
+                echo "✓ 下载成功！"
+                SUCCESS=true
+                break
+            else
+                echo "文件验证失败，尝试下一个镜像..."
+                rm -f "$PYTHON_FILE"
+            fi
+        else
+            echo "下载失败，尝试下一个镜像..."
+            rm -f "$PYTHON_FILE"
+        fi
+    done
+    
+    if [ "$SUCCESS" = false ]; then
+        echo "✗ 所有镜像下载失败，请检查网络连接"
+        exit 1
+    fi
+fi
+
+tar -xzf "$PYTHON_FILE"
 cd "Python-$PYTHON_VERSION"
 echo "✓ 源码下载完成"
 echo ""

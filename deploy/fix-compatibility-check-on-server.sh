@@ -1,3 +1,18 @@
+#!/bin/bash
+# 在服务器上直接修复兼容性检查脚本
+# 使用方法: 在服务器上执行: bash deploy/fix-compatibility-check-on-server.sh
+# 或者直接复制下面的命令到服务器执行
+
+cd /var/www/my-fullstack-app/deploy
+
+# 备份原文件
+if [ -f "检查Python兼容性.py" ]; then
+    cp 检查Python兼容性.py 检查Python兼容性.py.backup.$(date +%Y%m%d_%H%M%S)
+    echo "✓ 已备份原文件"
+fi
+
+# 修复导入错误：将 models.auth 改为从 auth 模块导入
+cat > 检查Python兼容性.py << 'PYTHON_EOF'
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
@@ -143,3 +158,13 @@ else:
     print("√ 兼容性检查通过！")
     print("=" * 50)
     sys.exit(0)
+PYTHON_EOF
+
+chmod +x 检查Python兼容性.py
+
+echo ""
+echo "✓ 修复完成！"
+echo ""
+echo "现在可以运行检查："
+echo "  python3 deploy/检查Python兼容性.py"
+
