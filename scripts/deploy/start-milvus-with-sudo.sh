@@ -15,11 +15,8 @@ sudo tee /etc/docker/daemon.json <<-'EOF'
 {
   "registry-mirrors": [
     "https://hub-mirror.c.163.com",
-    "https://docker.mirrors.ustc.edu.cn",
-    "https://reg-mirror.qiniu.com",
-    "https://jgz5n894.mirror.aliyuncs.com"
-  ],
-  "max-concurrent-downloads": 10
+    "https://docker.mirrors.ustc.edu.cn"
+  ]
 }
 EOF
 
