@@ -4,9 +4,55 @@
 """
 import json
 import os
+import re
 from datetime import datetime
 from database import SessionLocal
 from models import Article
+
+
+def parse_iso_date(date_str):
+    """
+    解析 ISO 格式日期字符串，兼容 Python 3.6 及以下版本
+    """
+    if not date_str:
+        return None
+    
+    try:
+        # Python 3.7+ 使用 fromisoformat
+        if hasattr(datetime, 'fromisoformat'):
+            # 处理时区信息
+            if 'Z' in date_str:
+                date_str = date_str.replace('Z', '+00:00')
+            elif date_str.endswith('+00:00'):
+                pass
+            elif '+' in date_str or date_str.count('-') > 2:
+                # 有时区信息
+                pass
+            return datetime.fromisoformat(date_str)
+        else:
+            # Python 3.6 及以下版本使用 strptime
+            # 移除时区信息（Z 或 +00:00）
+            date_str_clean = re.sub(r'[Z\+].*$', '', date_str)
+            
+            # 尝试不同的日期格式
+            formats = [
+                '%Y-%m-%dT%H:%M:%S',      # 2025-12-23T00:00:00
+                '%Y-%m-%dT%H:%M:%S.%f',   # 2025-12-23T00:00:00.000000
+                '%Y-%m-%d',               # 2025-12-23
+            ]
+            
+            for fmt in formats:
+                try:
+                    return datetime.strptime(date_str_clean, fmt)
+                except ValueError:
+                    continue
+            
+            # 如果所有格式都失败，返回当前时间
+            print(f"警告: 无法解析日期 '{date_str}'，使用当前时间")
+            return datetime.now()
+    except Exception as e:
+        print(f"警告: 解析日期 '{date_str}' 时出错: {e}，使用当前时间")
+        return datetime.now()
 
 
 def import_articles(input_file="data/articles.json", update_existing=True):
@@ -41,10 +87,11 @@ def import_articles(input_file="data/articles.json", update_existing=True):
                 # 解析发布时间
                 publish_date_str = article_data.get('publish_date')
                 if publish_date_str:
-                    if 'T' in publish_date_str:
-                        publish_date = datetime.fromisoformat(publish_date_str.replace('Z', '+00:00'))
-                    else:
-                        publish_date = datetime.fromisoformat(publish_date_str)
+                    publish_date = parse_iso_date(publish_date_str)
+                    if not publish_date:
+                        print(f"警告: 文章 '{article_data.get('title')}' 发布时间解析失败，跳过")
+                        skipped_count += 1
+                        continue
                 else:
                     print(f"警告: 文章 '{article_data.get('title')}' 没有发布时间，跳过")
                     skipped_count += 1

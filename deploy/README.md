@@ -290,23 +290,41 @@ sudo netstat -tlnp | grep :443
 
 ## 更新代码
 
-### 方法一：使用同步脚本（推荐）
+### 方法一：仅同步代码（最快）
+
+```bash
+# 在服务器上执行
+cd /var/www/my-fullstack-app && \
+git stash push -m backup 2>/dev/null || true && \
+git fetch gitee main && \
+git reset --hard gitee/main
+```
+
+### 方法二：使用完整同步脚本（推荐）
 
 ```bash
 # 在服务器上执行
 cd /var/www/my-fullstack-app
-chmod +x deploy/sync-on-server.sh
-./deploy/sync-on-server.sh
+bash deploy/sync-on-server-complete.sh
 ```
 
-### 方法二：手动更新
+### 方法三：使用本地同步脚本
+
+```powershell
+# 在 Windows 本地执行
+.\deploy\sync-quick.ps1
+```
+
+### 方法四：手动更新
 
 ```bash
 # 在服务器上
 cd /var/www/my-fullstack-app
 
 # 拉取最新代码
-git pull gitee main
+git stash push -m backup 2>/dev/null || true
+git fetch gitee main
+git reset --hard gitee/main
 
 # 更新后端依赖
 source venv/bin/activate
@@ -322,7 +340,9 @@ npm run build
 cd ..
 
 # 重启服务
+sudo systemctl daemon-reload
 sudo systemctl restart my-fullstack-app
+sleep 3
 sudo systemctl restart nginx
 ```
 
