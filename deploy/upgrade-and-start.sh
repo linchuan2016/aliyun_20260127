@@ -66,9 +66,11 @@ try:
     print(f"FastAPI: {fastapi.__version__}")
     print(f"Pydantic: {pydantic.__version__}")
     
-    from packaging import version
-    if version.parse(fastapi.__version__) < version.parse("0.115.0"):
-        raise Exception(f"FastAPI 版本过低: {fastapi.__version__}")
+    # 简单版本检查（不依赖 packaging 模块）
+    fastapi_version = fastapi.__version__.split('.')
+    major, minor = int(fastapi_version[0]), int(fastapi_version[1])
+    if major < 0 or (major == 0 and minor < 115):
+        raise Exception(f"FastAPI 版本过低: {fastapi.__version__}，需要 0.115.0+")
     
     from main import app
     print("✓ 应用导入成功")
