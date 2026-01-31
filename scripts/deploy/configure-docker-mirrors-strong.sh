@@ -13,13 +13,13 @@ echo "步骤 1: 配置多个国内镜像加速源..."
 sudo mkdir -p /etc/docker
 sudo tee /etc/docker/daemon.json <<-'EOF'
 {
-  "registry-mirrors": [
+        "registry-mirrors": [
+    "https://jgz5n894.mirror.aliyuncs.com",
     "https://docker.mirrors.ustc.edu.cn",
     "https://hub-mirror.c.163.com",
     "https://mirror.baidubce.com",
     "https://dockerhub.azk8s.cn",
-    "https://reg-mirror.qiniu.com",
-    "https://registry.cn-hangzhou.aliyuncs.com"
+    "https://reg-mirror.qiniu.com"
   ],
   "max-concurrent-downloads": 10,
   "max-concurrent-uploads": 5,

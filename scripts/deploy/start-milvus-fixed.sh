@@ -15,38 +15,30 @@ if ! command -v docker &> /dev/null; then
     exit 1
 fi
 
-# 确保 Docker 镜像加速已配置（强化版）
-echo "步骤 1: 检查并配置 Docker 镜像加速（强化版）..."
-if [ -f "$PROJECT_DIR/scripts/deploy/configure-docker-mirrors-strong.sh" ]; then
-    chmod +x "$PROJECT_DIR/scripts/deploy/configure-docker-mirrors-strong.sh"
-    sudo "$PROJECT_DIR/scripts/deploy/configure-docker-mirrors-strong.sh"
-elif [ -f "scripts/deploy/configure-docker-mirrors-strong.sh" ]; then
-    chmod +x scripts/deploy/configure-docker-mirrors-strong.sh
-    sudo ./scripts/deploy/configure-docker-mirrors-strong.sh
+# 确保 Docker 镜像加速已配置（优先使用阿里云镜像）
+echo "步骤 1: 检查并配置 Docker 镜像加速（阿里云）..."
+if [ -f "$PROJECT_DIR/scripts/deploy/configure-aliyun-mirror.sh" ]; then
+    chmod +x "$PROJECT_DIR/scripts/deploy/configure-aliyun-mirror.sh"
+    sudo "$PROJECT_DIR/scripts/deploy/configure-aliyun-mirror.sh"
+elif [ -f "scripts/deploy/configure-aliyun-mirror.sh" ]; then
+    chmod +x scripts/deploy/configure-aliyun-mirror.sh
+    sudo ./scripts/deploy/configure-aliyun-mirror.sh
 else
-    # 如果没有脚本，直接配置
-    if [ ! -f /etc/docker/daemon.json ] || ! grep -q "registry-mirrors" /etc/docker/daemon.json 2>/dev/null; then
-        echo "配置 Docker 镜像加速..."
+    # 如果没有脚本，直接配置阿里云镜像加速
+    if [ ! -f /etc/docker/daemon.json ] || ! grep -q "jgz5n894.mirror.aliyuncs.com" /etc/docker/daemon.json 2>/dev/null; then
+        echo "配置阿里云 Docker 镜像加速..."
         sudo mkdir -p /etc/docker
         sudo tee /etc/docker/daemon.json <<-'EOF'
 {
-  "registry-mirrors": [
-    "https://docker.mirrors.ustc.edu.cn",
-    "https://hub-mirror.c.163.com",
-    "https://mirror.baidubce.com",
-    "https://dockerhub.azk8s.cn",
-    "https://reg-mirror.qiniu.com",
-    "https://registry.cn-hangzhou.aliyuncs.com"
-  ],
-  "max-concurrent-downloads": 10
+  "registry-mirrors": ["https://jgz5n894.mirror.aliyuncs.com"]
 }
 EOF
         sudo systemctl daemon-reload
         sudo systemctl restart docker
         sleep 5
-        echo "✓ 镜像加速已配置并重启 Docker"
+        echo "✓ 阿里云镜像加速已配置并重启 Docker"
     else
-        echo "✓ 镜像加速已配置"
+        echo "✓ 阿里云镜像加速已配置"
     fi
 fi
 echo ""
