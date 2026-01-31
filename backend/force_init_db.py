@@ -38,8 +38,8 @@ def force_init():
         # 3. 如果数据为空，初始化数据
         if article_count == 0 or book_count == 0:
             print(">>> 步骤 3: 初始化数据...")
-            from init_db import init_database
-            init_database()
+            from init_db import init_db
+            init_db()
             print("✓ 数据初始化完成")
         else:
             print(">>> 步骤 3: 数据已存在，跳过初始化")
