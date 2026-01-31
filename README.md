@@ -34,15 +34,15 @@ my-fullstack-app/
 │   │   ├── router/  # 路由配置
 │   │   └── composables/ # 组合式函数
 │   ├── public/      # 静态资源
-│   │   ├── book-covers/    # 书籍封面
-│   │   ├── article-covers/ # 文章封面
 │   │   └── icons/   # 图标
 │   ├── package.json
 │   └── vite.config.js
 ├── data/            # 数据文件
-│   └── articles.json # 文章数据（用于Git同步）
+│   ├── products.db      # SQLite 数据库
+│   ├── articles.json    # 文章数据（用于Git同步）
+│   ├── book-covers/     # 书籍封面图片
+│   └── article-covers/  # 文章封面图片
 ├── scripts/         # 脚本文件夹
-│   ├── local/       # 本地开发脚本
 │   └── deploy/      # 部署配置和脚本
 │       ├── my-fullstack-app.service      # systemd 服务文件
 │       ├── nginx.conf                     # Nginx 配置
@@ -111,7 +111,7 @@ npm run dev
 
 ### 本地开发（SQLite）
 
-默认使用 SQLite，数据库文件：`backend/products.db`（已添加到 .gitignore）
+默认使用 SQLite，数据库文件：`data/products.db`（已添加到 .gitignore）
 
 初始化：
 ```bash

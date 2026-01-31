@@ -9,9 +9,14 @@ from sqlalchemy.orm import sessionmaker
 
 # 数据库配置
 # 本地开发使用 SQLite，生产环境使用 MySQL
+# 数据库文件路径（相对于 backend 目录）
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+PROJECT_ROOT = os.path.dirname(BASE_DIR)
+DB_FILE = os.path.join(PROJECT_ROOT, "data", "products.db")
+
 DATABASE_URL = os.getenv(
     "DATABASE_URL",
-    "sqlite:///./products.db"  # 默认使用 SQLite
+    f"sqlite:///{DB_FILE}"  # 默认使用 SQLite，存储在 data 文件夹
 )
 
 # 如果是 MySQL，格式应该是：mysql+pymysql://user:password@host:port/database

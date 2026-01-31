@@ -78,8 +78,8 @@
           </div>
           <div class="form-group">
             <label>封面图片URL</label>
-            <input v-model="bookForm.cover_image" type="text" placeholder="请输入封面图片URL或本地路径（如：/book-covers/xxx.jpg）" />
-            <small class="form-hint">支持URL或本地路径（如：/book-covers/xxx.jpg）</small>
+            <input v-model="bookForm.cover_image" type="text" placeholder="请输入封面图片URL或本地路径（如：/data/book-covers/xxx.jpg）" />
+            <small class="form-hint">支持URL或本地路径（如：/data/book-covers/xxx.jpg）</small>
             <div v-if="bookForm.cover_image" class="cover-preview">
               <img :src="bookForm.cover_image" alt="封面预览" @error="previewError = true" />
               <span v-if="previewError" class="preview-error">图片加载失败</span>

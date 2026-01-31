@@ -24,10 +24,10 @@ def update_cover_images():
             # 如果是外部URL，改为本地路径
             if book.cover_image and book.cover_image.startswith('http'):
                 if 's3259913' in book.cover_image:
-                    book.cover_image = "/book-covers/s3259913.jpg"
+                    book.cover_image = "/data/book-covers/s3259913.jpg"
                     updated_books += 1
                 elif 's1070959' in book.cover_image:
-                    book.cover_image = "/book-covers/s1070959.jpg"
+                    book.cover_image = "/data/book-covers/s1070959.jpg"
                     updated_books += 1
         
         if updated_books > 0:
@@ -46,7 +46,7 @@ def update_cover_images():
             # 如果文章没有封面，设置默认封面
             if not article.cover_image:
                 if 'steam' in article.title.lower() or 'steel' in article.title.lower():
-                    article.cover_image = "/article-covers/Steam.jpg"
+                    article.cover_image = "/data/article-covers/Steam.jpg"
                     updated_articles += 1
         
         if updated_articles > 0:

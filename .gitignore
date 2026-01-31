@@ -13,6 +13,10 @@ build/
 *.db
 *.sqlite
 *.sqlite3
+# 但保留 data 文件夹中的其他文件（如 articles.json, book-covers/, article-covers/）
+!data/articles.json
+!data/book-covers/
+!data/article-covers/
 
 # Node.js
 node_modules/

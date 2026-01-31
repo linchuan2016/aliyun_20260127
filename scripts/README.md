@@ -1,31 +1,21 @@
 # Scripts 文件夹
 
-此文件夹包含项目的所有脚本文件，按用途分为两个子目录。
+此文件夹包含项目的所有部署相关脚本和配置文件。
 
 ## 目录结构
 
 ```
 scripts/
-├── local/      # 本地开发脚本
-│   └── (开发相关的 PowerShell 脚本)
-└── deploy/     # 部署配置和脚本
-    ├── *.service      # systemd 服务文件
-    ├── nginx*.conf    # Nginx 配置文件
-    ├── *.sh           # 服务器端脚本
-    ├── *.ps1          # Windows 同步脚本
-    └── README.md      # 部署文档
+├── deploy/     # 部署配置和脚本
+│   ├── *.service      # systemd 服务文件
+│   ├── nginx*.conf    # Nginx 配置文件
+│   ├── *.sh           # 服务器端脚本
+│   ├── *.ps1          # Windows 同步脚本
+│   └── README.md      # 部署文档
+└── README.md   # 本文件
 ```
 
-## 本地开发脚本 (local/)
-
-本地开发相关的脚本（如果存在）：
-- 项目检查脚本
-- 依赖安装脚本
-- 资源下载脚本
-
-## 部署脚本 (deploy/)
-
-### 主要使用的脚本
+## 主要使用的脚本
 
 1. **代码同步**：
    - Windows: `.\scripts\deploy\sync-quick.ps1`
@@ -43,12 +33,12 @@ scripts/
    - `install-docker-aliyun.sh` - 标准安装
    - `install-docker-aliyun-low-memory.sh` - 低内存环境
 
-### 详细说明
+## 详细说明
 
 详细的部署说明请参考 `scripts/deploy/README.md` 和 `scripts/deploy/文件分类说明.md`。
 
 ## 注意事项
 
 - 所有脚本都使用相对路径，会自动检测项目根目录
-- 服务器端脚本路径已更新为 `/var/www/my-fullstack-app/scripts/deploy/`
-- 本地脚本路径已更新为 `scripts/deploy/` 或 `scripts/local/`
+- 服务器端脚本路径：`/var/www/my-fullstack-app/scripts/deploy/`
+- 本地脚本路径：`scripts/deploy/`

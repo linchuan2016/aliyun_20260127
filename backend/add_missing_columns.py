@@ -6,9 +6,10 @@ import sqlite3
 import os
 import sys
 
-# 获取数据库路径
+# 获取数据库路径（存储在 data 文件夹）
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DB_PATH = os.path.join(BASE_DIR, "products.db")
+PROJECT_ROOT = os.path.dirname(BASE_DIR)
+DB_PATH = os.path.join(PROJECT_ROOT, "data", "products.db")
 
 def add_missing_columns():
     """添加缺失的列"""

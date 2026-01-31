@@ -21,26 +21,26 @@ echo ""
 
 # 步骤 2: 检查封面图片文件
 echo ">>> 步骤 2: 检查封面图片文件..."
-if [ ! -d "$DEPLOY_PATH/frontend/public/book-covers" ]; then
-    mkdir -p "$DEPLOY_PATH/frontend/public/book-covers"
+if [ ! -d "$DEPLOY_PATH/data/book-covers" ]; then
+    mkdir -p "$DEPLOY_PATH/data/book-covers"
     echo "✓ 创建 book-covers 目录"
 fi
 
-if [ ! -d "$DEPLOY_PATH/frontend/public/article-covers" ]; then
-    mkdir -p "$DEPLOY_PATH/frontend/public/article-covers"
+if [ ! -d "$DEPLOY_PATH/data/article-covers" ]; then
+    mkdir -p "$DEPLOY_PATH/data/article-covers"
     echo "✓ 创建 article-covers 目录"
 fi
 
 # 检查图片文件是否存在
-if [ ! -f "$DEPLOY_PATH/frontend/public/book-covers/s3259913.jpg" ]; then
+if [ ! -f "$DEPLOY_PATH/data/book-covers/s3259913.jpg" ]; then
     echo "⚠  s3259913.jpg 不存在，需要下载"
 fi
 
-if [ ! -f "$DEPLOY_PATH/frontend/public/book-covers/s1070959.jpg" ]; then
+if [ ! -f "$DEPLOY_PATH/data/book-covers/s1070959.jpg" ]; then
     echo "⚠  s1070959.jpg 不存在，需要下载"
 fi
 
-if [ ! -f "$DEPLOY_PATH/frontend/public/article-covers/Steam.jpg" ]; then
+if [ ! -f "$DEPLOY_PATH/data/article-covers/Steam.jpg" ]; then
     echo "⚠  Steam.jpg 不存在，需要下载"
 fi
 
@@ -75,9 +75,9 @@ echo ""
 
 # 步骤 6: 验证
 echo ">>> 步骤 6: 验证封面图片..."
-echo "检查静态文件目录:"
-ls -la $DEPLOY_PATH/frontend/dist/book-covers/ 2>/dev/null || echo "book-covers 目录不存在于 dist"
-ls -la $DEPLOY_PATH/frontend/dist/article-covers/ 2>/dev/null || echo "article-covers 目录不存在于 dist"
+echo "检查数据目录:"
+ls -la $DEPLOY_PATH/data/book-covers/ 2>/dev/null || echo "book-covers 目录不存在"
+ls -la $DEPLOY_PATH/data/article-covers/ 2>/dev/null || echo "article-covers 目录不存在"
 echo ""
 
 echo "测试 API:"

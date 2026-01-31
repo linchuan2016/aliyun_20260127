@@ -8,7 +8,7 @@ from database import SessionLocal
 from models import Article
 
 # 封面图片保存目录
-COVERS_DIR = os.path.join(os.path.dirname(__file__), "..", "frontend", "public", "article-covers")
+COVERS_DIR = os.path.join(os.path.dirname(__file__), "..", "data", "article-covers")
 os.makedirs(COVERS_DIR, exist_ok=True)
 
 def download_image(url, save_path):
@@ -87,7 +87,7 @@ def download_article_covers():
             # 下载图片
             if download_image(article.cover_image, local_path):
                 # 更新数据库中的路径为相对路径
-                relative_path = f"/article-covers/{filename}"
+                relative_path = f"/data/article-covers/{filename}"
                 article.cover_image = relative_path
                 db.commit()
                 print(f"  Updated database: {relative_path}")

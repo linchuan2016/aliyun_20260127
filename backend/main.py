@@ -4,6 +4,7 @@ from typing import List
 from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordRequestForm
+from fastapi.staticfiles import StaticFiles
 from sqlalchemy.orm import Session
 
 # 导入数据库相关（必须在 models 之前）
@@ -24,6 +25,13 @@ from auth import (
 )
 
 app = FastAPI(title="My Fullstack App API")
+
+# 配置静态文件服务（提供 data 文件夹的访问）
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+PROJECT_ROOT = os.path.dirname(BASE_DIR)
+DATA_DIR = os.path.join(PROJECT_ROOT, "data")
+if os.path.exists(DATA_DIR):
+    app.mount("/data", StaticFiles(directory=DATA_DIR), name="data")
 
 # 确保数据库表已创建
 try:
