@@ -9,18 +9,24 @@ echo "Milvus 和 Attu 直接启动（解决网络超时）"
 echo "=========================================="
 echo ""
 
-# 配置阿里云镜像加速
-echo "步骤 1: 配置阿里云镜像加速..."
+# 配置多个国内镜像加速源
+echo "步骤 1: 配置国内镜像加速（多个源）..."
 sudo mkdir -p /etc/docker
 sudo tee /etc/docker/daemon.json <<-'EOF'
 {
-  "registry-mirrors": ["https://jgz5n894.mirror.aliyuncs.com"]
+  "registry-mirrors": [
+    "https://hub-mirror.c.163.com",
+    "https://docker.mirrors.ustc.edu.cn",
+    "https://reg-mirror.qiniu.com",
+    "https://jgz5n894.mirror.aliyuncs.com"
+  ],
+  "max-concurrent-downloads": 10
 }
 EOF
 sudo systemctl daemon-reload
 sudo systemctl restart docker
 sleep 5
-echo "✓ 镜像加速已配置"
+echo "✓ 镜像加速已配置（网易、中科大、七牛云、阿里云）"
 echo ""
 
 # 创建目录
@@ -149,7 +155,7 @@ for IMAGE in "${IMAGES[@]}"; do
         RETRY=$((RETRY + 1))
         echo "  尝试 $RETRY/$MAX_RETRIES..."
         
-        if timeout 600 docker pull "$IMAGE" 2>&1; then
+        if timeout 900 docker pull "$IMAGE" 2>&1; then
             echo "  ✓ $IMAGE 拉取成功！"
             SUCCESS=true
             break
