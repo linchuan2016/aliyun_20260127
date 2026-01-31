@@ -60,14 +60,21 @@ echo "✓ 目录创建完成"
 echo ""
 
 echo "步骤 2: 复制配置文件..."
-if [ -f "$PROJECT_DIR/scripts/deploy/milvus-docker-compose.yml" ]; then
+# 优先使用国内镜像版本
+if [ -f "$PROJECT_DIR/scripts/deploy/milvus-docker-compose-cn.yml" ]; then
+    sudo cp "$PROJECT_DIR/scripts/deploy/milvus-docker-compose-cn.yml" "$COMPOSE_FILE"
+    echo "✓ 配置文件复制完成（使用国内镜像版本）"
+elif [ -f "scripts/deploy/milvus-docker-compose-cn.yml" ]; then
+    sudo cp "scripts/deploy/milvus-docker-compose-cn.yml" "$COMPOSE_FILE"
+    echo "✓ 配置文件复制完成（使用国内镜像版本）"
+elif [ -f "$PROJECT_DIR/scripts/deploy/milvus-docker-compose.yml" ]; then
     sudo cp "$PROJECT_DIR/scripts/deploy/milvus-docker-compose.yml" "$COMPOSE_FILE"
     echo "✓ 配置文件复制完成"
 elif [ -f "scripts/deploy/milvus-docker-compose.yml" ]; then
     sudo cp "scripts/deploy/milvus-docker-compose.yml" "$COMPOSE_FILE"
     echo "✓ 配置文件复制完成"
 else
-    echo "❌ 错误: 未找到 milvus-docker-compose.yml 文件"
+    echo "❌ 错误: 未找到 docker-compose 配置文件"
     exit 1
 fi
 echo ""
