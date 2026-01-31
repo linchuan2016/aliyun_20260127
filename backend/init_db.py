@@ -117,6 +117,7 @@ def init_db():
                 author="Ivan Zhao（赵一帆，Notion 联合创始人兼 CEO）",
                 original_url="https://www.notion.com/blog/steam-steel-and-infinite-minds-ai",
                 category="科技",
+                cover_image="/article-covers/Steam.jpg",
                 excerpt="Notion创始人Ivan Zhao关于AI如何改变知识工作的深度思考，探讨了从个人到组织再到整个经济层面的变革。",
                 content="""
                 <h3>蒸汽、钢铁与无限心智</h3>
@@ -153,7 +154,7 @@ def init_db():
             # 添加《异类》
             book1 = Book(
                 title="异类",
-                cover_image="https://img3.doubanio.com/view/subject/l/public/s3259913.jpg",
+                cover_image="/book-covers/s3259913.jpg",
                 author="马尔科姆·格拉德威尔（Malcolm Gladwell）",
                 publish_date=datetime(2009, 4, 1),
                 description="在《异类》一书中，格拉德威尔对社会中那些成功人士进行的分析，让读者看到了一连串颇感意外的统计结果。这本书要告诉读者的是：如果没有机遇和文化、环境因素，即便是智商超过爱因斯坦，也只能做一份平庸的工作。"
@@ -163,7 +164,7 @@ def init_db():
             # 添加《枪炮、病菌与钢铁：人类社会的命运》
             book2 = Book(
                 title="枪炮、病菌与钢铁：人类社会的命运",
-                cover_image="https://img3.doubanio.com/view/subject/l/public/s1070959.jpg",
+                cover_image="/book-covers/s1070959.jpg",
                 author="贾雷德·戴蒙德（Jared Diamond）",
                 publish_date=datetime(2000, 8, 1),
                 description="为什么是欧亚大陆人征服、赶走或大批杀死印第安人、澳大利亚人和非洲人，而不是相反？为什么小麦和玉米、牛和猪以及现代世界的其他一些'了不起的'作物和牲畜出现在这些特定地区，而不是其他地区？在这部开创性的著作中，演化生物学家贾雷德·戴蒙德揭示了事实上有助于形成历史最广泛模式的环境因素，从而以震撼人心的力量摧毁了以种族主义为基础的人类史理论。"
