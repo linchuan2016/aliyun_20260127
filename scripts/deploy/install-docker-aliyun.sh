@@ -27,7 +27,7 @@ echo "总内存: ${TOTAL_MEM}MB, 可用内存: ${AVAIL_MEM}MB"
 
 if [ "$AVAIL_MEM" -lt 500 ]; then
     echo "⚠️  警告: 可用内存不足 500MB，建议使用低内存优化脚本"
-    echo "  运行: sudo ./deploy/install-docker-aliyun-low-memory.sh"
+    echo "  运行: sudo ./scripts/deploy/install-docker-aliyun-low-memory.sh"
     echo "  或使用官方脚本: curl -fsSL https://get.docker.com | bash -s docker --mirror Aliyun"
     echo ""
 fi
@@ -37,7 +37,7 @@ echo "安装必要的依赖..."
 echo "  安装 yum-utils..."
 sudo yum install -y yum-utils || {
     echo "❌ yum-utils 安装失败，可能是内存不足"
-    echo "建议使用: sudo ./deploy/install-docker-aliyun-low-memory.sh"
+    echo "建议使用: sudo ./scripts/deploy/install-docker-aliyun-low-memory.sh"
     exit 1
 }
 

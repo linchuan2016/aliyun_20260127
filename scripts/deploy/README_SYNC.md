@@ -52,7 +52,7 @@ bash deploy/create-scripts-on-server.sh
 或者手动创建：
 
 ```bash
-cd /var/www/my-fullstack-app/deploy
+cd /var/www/my-fullstack-app/scripts/deploy
 
 # 创建脚本
 cat > force-install-correct-versions.sh << 'EOF'
@@ -69,7 +69,7 @@ chmod +x force-install-correct-versions.sh
 
 ```bash
 # 在本地执行
-scp deploy/force-install-correct-versions.sh root@你的服务器IP:/var/www/my-fullstack-app/deploy/
+scp scripts/deploy/force-install-correct-versions.sh root@你的服务器IP:/var/www/my-fullstack-app/scripts/deploy/
 ```
 
 ---

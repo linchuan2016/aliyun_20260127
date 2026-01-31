@@ -1,6 +1,6 @@
 #!/bin/bash
 # 诊断 Blog 和 Book 模块问题
-# 在服务器上执行: bash /var/www/my-fullstack-app/deploy/诊断Blog和Book问题.sh
+# 在服务器上执行: bash /var/www/my-fullstack-app/scripts/deploy/诊断Blog和Book问题.sh
 
 echo "=========================================="
 echo "诊断 Blog 和 Book 模块问题"

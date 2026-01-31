@@ -1,5 +1,5 @@
 # Quick sync script - single SSH connection
-# Usage: .\deploy\sync-quick.ps1
+# Usage: .\scripts\deploy\sync-quick.ps1
 
 $SERVER_IP = "47.112.29.212"
 $SERVER_USER = "root"

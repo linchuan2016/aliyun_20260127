@@ -1,6 +1,6 @@
 #!/bin/bash
 # 在阿里云服务器上直接执行的完整同步脚本
-# 使用方法: 在服务器上执行: bash /var/www/my-fullstack-app/deploy/sync-on-server-complete.sh
+# 使用方法: 在服务器上执行: bash /var/www/my-fullstack-app/scripts/deploy/sync-on-server-complete.sh
 
 set -e  # 遇到错误立即退出
 

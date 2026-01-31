@@ -41,12 +41,13 @@ my-fullstack-app/
 │   └── vite.config.js
 ├── data/            # 数据文件
 │   └── articles.json # 文章数据（用于Git同步）
-├── deploy/          # 部署配置和脚本
-│   ├── my-fullstack-app.service      # systemd 服务文件
-│   ├── nginx.conf                     # Nginx 配置
-│   ├── sync-on-server-complete.sh     # 服务器同步脚本
-│   └── sync-quick.ps1                 # 快速同步脚本（Windows）
-├── scripts/         # 辅助脚本
+├── scripts/         # 脚本文件夹
+│   ├── local/       # 本地开发脚本
+│   └── deploy/      # 部署配置和脚本
+│       ├── my-fullstack-app.service      # systemd 服务文件
+│       ├── nginx.conf                     # Nginx 配置
+│       ├── sync-on-server-complete.sh     # 服务器同步脚本
+│       └── sync-quick.ps1                 # 快速同步脚本（Windows）
 ├── start-local.ps1  # 本地启动脚本（Windows）
 ├── start-local.bat  # 本地启动脚本（批处理）
 └── README.md
@@ -192,7 +193,7 @@ Blog 文章数据可以导出到 JSON 文件并同步到 Git 仓库，实现跨�
 
 ### 在服务器上导入文章
 
-服务器上的同步脚本（`deploy/阿里云服务器直接执行命令.sh` 和 `deploy/sync-on-server-complete.sh`）会自动检测并导入 `data/articles.json` 文件。
+服务器上的同步脚本（`scripts/deploy/阿里云服务器直接同步命令.sh` 和 `scripts/deploy/sync-on-server-complete.sh`）会自动检测并导入 `data/articles.json` 文件。
 
 如果文章已存在（根据标题和发布时间判断），默认会更新现有文章。可以通过修改 `backend/import_articles.py` 中的 `update_existing` 参数来控制行为。
 
@@ -239,12 +240,12 @@ git reset --hard gitee/main
 1. **同步代码并创建服务文件**
    ```bash
    # 在服务器上执行完整修复命令（包含服务文件创建）
-   # 参考 deploy/最终完整修复命令.txt
+   # 参考 scripts/deploy/完整修复Blog和Book.sh
    ```
 
 2. **配置 Nginx**
    ```bash
-   sudo cp deploy/nginx.conf /etc/nginx/sites-available/my-fullstack-app
+   sudo cp scripts/deploy/nginx.conf /etc/nginx/sites-available/my-fullstack-app
    sudo ln -s /etc/nginx/sites-available/my-fullstack-app /etc/nginx/sites-enabled/
    sudo nginx -t
    sudo systemctl restart nginx
@@ -268,8 +269,8 @@ git reset --hard gitee/main
 2. **应用 SSL 配置**
    ```bash
    # 在服务器上执行
-   chmod +x deploy/apply-ssl-complete-fixed.sh
-   sudo ./deploy/apply-ssl-complete-fixed.sh
+   chmod +x scripts/deploy/apply-ssl-complete-fixed.sh
+   sudo ./scripts/deploy/apply-ssl-complete-fixed.sh
    ```
 
 3. **重启服务**
@@ -278,7 +279,7 @@ git reset --hard gitee/main
    sudo systemctl restart nginx
    ```
 
-详细部署步骤请参考 `deploy/README.md`。
+详细部署步骤请参考 `scripts/deploy/README.md`。
 
 ## 许可证
 

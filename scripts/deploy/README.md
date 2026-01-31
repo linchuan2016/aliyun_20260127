@@ -45,36 +45,36 @@ cd /var/www/my-fullstack-app
 git pull gitee main
 
 # 执行完整部署脚本（会自动安装 Docker、配置防火墙、启动服务）
-chmod +x deploy/deploy-milvus-aliyun-complete.sh
-sudo ./deploy/deploy-milvus-aliyun-complete.sh
+chmod +x scripts/deploy/deploy-milvus-aliyun-complete.sh
+sudo ./scripts/deploy/deploy-milvus-aliyun-complete.sh
 ```
 
 ### 方法二：分步部署
 
 ```bash
 # 1. 安装 Docker（如果未安装）
-chmod +x deploy/install-docker-aliyun.sh
-sudo ./deploy/install-docker-aliyun.sh
+chmod +x scripts/deploy/install-docker-aliyun.sh
+sudo ./scripts/deploy/install-docker-aliyun.sh
 
 # 2. 安装 Docker Compose（如果未安装）
-chmod +x deploy/install-docker-compose.sh
-sudo ./deploy/install-docker-compose.sh
+chmod +x scripts/deploy/install-docker-compose.sh
+sudo ./scripts/deploy/install-docker-compose.sh
 
 # 3. 配置防火墙
-chmod +x deploy/configure-firewall.sh
-sudo ./deploy/configure-firewall.sh
+chmod +x scripts/deploy/configure-firewall.sh
+sudo ./scripts/deploy/configure-firewall.sh
 
 # 4. 部署 Milvus 和 Attu
-chmod +x deploy/deploy-milvus.sh
-sudo ./deploy/deploy-milvus.sh
+chmod +x scripts/deploy/deploy-milvus.sh
+sudo ./scripts/deploy/deploy-milvus.sh
 ```
 
 ### 验证部署
 
 ```bash
 # 验证部署状态
-chmod +x deploy/verify-milvus-deployment.sh
-./deploy/verify-milvus-deployment.sh
+chmod +x scripts/deploy/verify-milvus-deployment.sh
+./scripts/deploy/verify-milvus-deployment.sh
 ```
 
 ### 访问服务
@@ -115,7 +115,7 @@ docker-compose down -v
 
 ```bash
 # 复制 Nginx 配置
-sudo cp deploy/nginx-attu.conf /etc/nginx/conf.d/attu.conf
+sudo cp scripts/deploy/nginx-attu.conf /etc/nginx/conf.d/attu.conf
 
 # 编辑配置文件，修改 server_name
 sudo nano /etc/nginx/conf.d/attu.conf
@@ -132,7 +132,7 @@ sudo systemctl restart nginx
 1. **端口无法访问**
    - 检查防火墙：`sudo firewall-cmd --list-ports`
    - 检查阿里云安全组是否开放端口 3000 和 19530
-   - 运行 `deploy/configure-firewall.sh` 配置防火墙
+   - 运行 `scripts/deploy/configure-firewall.sh` 配置防火墙
 
 2. **服务启动失败**
    - 查看日志：`cd /opt/milvus && docker-compose logs -f`
@@ -157,13 +157,13 @@ sudo systemctl restart nginx
 cd /var/www/my-fullstack-app
 
 # 复制 Nginx 配置
-sudo cp deploy/nginx.conf /etc/nginx/conf.d/my-fullstack-app.conf
+sudo cp scripts/deploy/nginx.conf /etc/nginx/conf.d/my-fullstack-app.conf
 # 或
-sudo cp deploy/nginx.conf /etc/nginx/sites-available/my-fullstack-app
+sudo cp scripts/deploy/nginx.conf /etc/nginx/sites-available/my-fullstack-app
 sudo ln -s /etc/nginx/sites-available/my-fullstack-app /etc/nginx/sites-enabled/
 
 # 复制 systemd 配置
-sudo cp deploy/my-fullstack-app.service /etc/systemd/system/
+sudo cp scripts/deploy/my-fullstack-app.service /etc/systemd/system/
 
 # 启动服务
 sudo systemctl daemon-reload
@@ -203,8 +203,8 @@ ssh root@47.112.29.212 "chmod 600 /etc/nginx/ssl/linchuan.tech/*.pem"
 
 ```bash
 cd /var/www/my-fullstack-app
-chmod +x deploy/apply-ssl-complete-fixed.sh
-sudo ./deploy/apply-ssl-complete-fixed.sh
+chmod +x scripts/deploy/apply-ssl-complete-fixed.sh
+sudo ./scripts/deploy/apply-ssl-complete-fixed.sh
 ```
 
 #### 步骤 3: 重启服务
@@ -305,7 +305,7 @@ git reset --hard gitee/main
 ```bash
 # 在服务器上执行
 cd /var/www/my-fullstack-app
-bash deploy/sync-on-server-complete.sh
+bash scripts/deploy/sync-on-server-complete.sh
 ```
 
 ### 方法三：使用本地同步脚本
@@ -367,8 +367,8 @@ git pull gitee main
 ```bash
 # 在服务器上执行
 cd /var/www/my-fullstack-app
-chmod +x deploy/update-icons-on-server.sh
-./deploy/update-icons-on-server.sh
+chmod +x scripts/deploy/update-icons-on-server.sh
+./scripts/deploy/update-icons-on-server.sh
 ```
 
 或手动执行：

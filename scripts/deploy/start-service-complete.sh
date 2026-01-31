@@ -1,6 +1,6 @@
 #!/bin/bash
 # 完整启动服务流程
-# 在服务器上执行: bash deploy/start-service-complete.sh
+# 在服务器上执行: bash scripts/deploy/start-service-complete.sh
 
 set -e
 

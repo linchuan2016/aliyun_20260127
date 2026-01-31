@@ -1,6 +1,6 @@
 #!/bin/bash
 # 完整修复 Blog 和 Book 模块
-# 在服务器上执行: bash /var/www/my-fullstack-app/deploy/完整修复Blog和Book.sh
+# 在服务器上执行: bash /var/www/my-fullstack-app/scripts/deploy/完整修复Blog和Book.sh
 
 set -e
 

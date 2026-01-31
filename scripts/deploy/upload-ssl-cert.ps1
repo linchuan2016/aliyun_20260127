@@ -82,10 +82,10 @@ Write-Host "证书上传完成！" -ForegroundColor Green
 Write-Host "==========================================" -ForegroundColor Green
 Write-Host ""
 Write-Host "下一步操作:" -ForegroundColor Cyan
-Write-Host "1. 上传 Nginx 配置: scp deploy/nginx-ssl.conf root@${ServerIP}:/etc/nginx/sites-available/my-fullstack-app" -ForegroundColor White
+Write-Host "1. 上传 Nginx 配置: scp scripts/deploy/nginx-ssl.conf root@${ServerIP}:/etc/nginx/sites-available/my-fullstack-app" -ForegroundColor White
 Write-Host "2. 测试配置: ssh root@${ServerIP} 'nginx -t'" -ForegroundColor White
 Write-Host "3. 重载 Nginx: ssh root@${ServerIP} 'systemctl reload nginx'" -ForegroundColor White
 Write-Host ""
-Write-Host "详细说明请查看: deploy/DEPLOY_SSL.md" -ForegroundColor Yellow
+Write-Host "详细说明请查看: scripts/deploy/README.md" -ForegroundColor Yellow
 Write-Host ""
 

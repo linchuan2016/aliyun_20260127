@@ -1,6 +1,6 @@
 #!/bin/bash
 # 修复封面图片显示问题
-# 在服务器上执行: bash /var/www/my-fullstack-app/deploy/修复封面图片.sh
+# 在服务器上执行: bash /var/www/my-fullstack-app/scripts/deploy/修复封面图片.sh
 
 set -e
 
