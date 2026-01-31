@@ -66,6 +66,8 @@ class ArticleCreate(BaseModel):
     original_url: str = None
     category: str = None
     content: str = None
+    content_en: Optional[str] = None
+    cover_image: Optional[str] = None
     excerpt: str = None
 
 
@@ -77,6 +79,8 @@ class ArticleUpdate(BaseModel):
     original_url: str = None
     category: str = None
     content: str = None
+    content_en: Optional[str] = None
+    cover_image: Optional[str] = None
     excerpt: str = None
 
 
@@ -89,7 +93,39 @@ class ArticleResponse(BaseModel):
     original_url: Optional[str] = None
     category: Optional[str] = None
     content: Optional[str] = None
+    content_en: Optional[str] = None
+    cover_image: Optional[str] = None
     excerpt: Optional[str] = None
+    created_at: Optional[str] = None
+    updated_at: Optional[str] = None
+
+
+class BookCreate(BaseModel):
+    """创建书籍请求模型"""
+    title: str
+    cover_image: str = None
+    author: str
+    publish_date: str
+    description: Optional[str] = None
+
+
+class BookUpdate(BaseModel):
+    """更新书籍请求模型"""
+    title: str = None
+    cover_image: str = None
+    author: str = None
+    publish_date: str = None
+    description: Optional[str] = None
+
+
+class BookResponse(BaseModel):
+    """书籍响应模型"""
+    id: int
+    title: str
+    cover_image: Optional[str] = None
+    author: str
+    publish_date: str
+    description: Optional[str] = None
     created_at: Optional[str] = None
     updated_at: Optional[str] = None
 

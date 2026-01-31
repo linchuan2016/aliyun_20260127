@@ -73,5 +73,20 @@ backend/add_article.py
 
 # Temporary deployment documentation files
 deploy/*.txt
-!deploy/最终完整修复命令.txt
 deploy/清理计划.md
+
+# One-time migration scripts (already executed)
+backend/add_article_fields.py
+backend/add_description_column.py
+backend/update_book_descriptions.py
+backend/update_first_article.py
+
+# Deploy directory cleanup - removed files (for reference)
+# All fix-*.sh scripts (one-time fixes, already resolved)
+# All Python upgrade related files (upgrade completed)
+# All Milvus related files (not used in this project)
+# All pip mirror configuration files (already configured)
+# Duplicate sync scripts (kept only main ones)
+# Article sync related files (better scripts exist)
+# Other one-time utility scripts
+# Outdated documentation files

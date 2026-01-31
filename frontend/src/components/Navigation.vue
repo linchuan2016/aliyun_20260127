@@ -9,11 +9,14 @@
           <router-link to="/" class="nav-link" :class="{ active: $route.path === '/' }">
             首页
           </router-link>
+          <router-link to="/rag" class="nav-link" :class="{ active: $route.path === '/rag' }">
+            RAG
+          </router-link>
           <router-link to="/blog" class="nav-link" :class="{ active: $route.path === '/blog' }">
             Blog
           </router-link>
-          <router-link to="/rag" class="nav-link" :class="{ active: $route.path === '/rag' }">
-            RAG
+          <router-link to="/book" class="nav-link" :class="{ active: $route.path === '/book' }">
+            Book
           </router-link>
         </div>
       </div>

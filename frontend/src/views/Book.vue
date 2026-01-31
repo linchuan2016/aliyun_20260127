@@ -1,6 +1,6 @@
 <template>
-  <div class="blog-container">
-    <div class="blog-content">
+  <div class="book-container">
+    <div class="book-content">
       <!-- 加载状态 -->
       <div v-if="loading" class="loading-state">
         <div class="spinner"></div>
@@ -13,24 +13,23 @@
       </div>
 
       <!-- 空状态 -->
-      <div v-else-if="articles.length === 0" class="empty-state">
-        暂无文章
+      <div v-else-if="books.length === 0" class="empty-state">
+        暂无书籍
       </div>
 
-      <!-- 文章卡片网格 - 两列并排，64px间隙 -->
-      <div v-else class="articles-grid">
+      <!-- 书籍卡片网格 - 两列并排，无间隙 -->
+      <div v-else class="books-grid">
         <div 
-          v-for="article in articles" 
-          :key="article.id" 
-          class="article-card"
-          @click="goToDetail(article)"
+          v-for="book in books" 
+          :key="book.id" 
+          class="book-card"
         >
           <!-- 封面图片 - 2:1 比例 -->
-          <div class="article-cover">
+          <div class="book-cover">
             <img 
-              v-if="article.cover_image" 
-              :src="article.cover_image" 
-              :alt="article.title"
+              v-if="book.cover_image" 
+              :src="book.cover_image" 
+              :alt="book.title"
               class="cover-image"
               @error="handleImageError"
             />
@@ -39,20 +38,20 @@
             </div>
           </div>
 
-          <!-- 文章信息 -->
-          <div class="article-info">
-            <h2 class="article-title">{{ article.title }}</h2>
-            <div class="article-meta">
-              <div class="article-author">
-                <span class="author-name">{{ article.author }}</span>
+          <!-- 书籍信息 -->
+          <div class="book-info">
+            <h2 class="book-title">{{ book.title }}</h2>
+            <div class="book-meta">
+              <div class="book-author">
+                <span class="author-name">{{ book.author }}</span>
               </div>
-              <div class="article-date">
-                <span class="date-value">{{ formatDate(article.publish_date) }}</span>
+              <div class="book-date">
+                <span class="date-value">{{ formatDate(book.publish_date) }}</span>
               </div>
             </div>
-            <!-- 文章摘要 -->
-            <div v-if="article.excerpt" class="article-excerpt">
-              <p>{{ article.excerpt }}</p>
+            <!-- 书籍简介 -->
+            <div v-if="book.description" class="book-description">
+              <p>{{ book.description }}</p>
             </div>
           </div>
         </div>
@@ -63,27 +62,25 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
 
 // 生产环境使用相对路径，开发环境使用完整URL
 const API_BASE_URL = import.meta.env.PROD ? '' : 'http://127.0.0.1:8000'
-const router = useRouter()
 
-const articles = ref([])
+const books = ref([])
 const loading = ref(true)
 const error = ref('')
 
-const fetchArticles = async () => {
+const fetchBooks = async () => {
   loading.value = true
   error.value = ''
 
   try {
     const response = await fetch(
-      `${API_BASE_URL}/api/articles?order_by=publish_date&order=desc`
+      `${API_BASE_URL}/api/books?order_by=publish_date&order=desc`
     )
 
     if (!response.ok) {
-      let errorMsg = '获取文章列表失败'
+      let errorMsg = '获取书籍列表失败'
       try {
         const errorData = await response.json()
         errorMsg = errorData.detail || errorMsg
@@ -94,15 +91,15 @@ const fetchArticles = async () => {
     }
 
     const data = await response.json()
-    articles.value = data
+    books.value = data
   } catch (err) {
     // 处理网络错误
     if (err instanceof TypeError && err.message === 'Failed to fetch') {
       error.value = '无法连接到服务器，请检查后端服务是否运行'
     } else {
-      error.value = err.message || '加载文章列表失败'
+      error.value = err.message || '加载书籍列表失败'
     }
-    console.error('获取文章列表错误:', err)
+    console.error('获取书籍列表错误:', err)
   } finally {
     loading.value = false
   }
@@ -129,20 +126,13 @@ const handleImageError = (event) => {
   }
 }
 
-const goToDetail = (article) => {
-  // 第一篇文章跳转到详情页
-  if (article.id === 1) {
-    router.push(`/blog/${article.id}`)
-  }
-}
-
 onMounted(() => {
-  fetchArticles()
+  fetchBooks()
 })
 </script>
 
 <style scoped>
-.blog-container {
+.book-container {
   min-height: calc(100vh - 80px);
   padding: 3.2rem 1.6rem;
   background: #ffffff;
@@ -151,22 +141,22 @@ onMounted(() => {
   align-items: flex-start;
 }
 
-.blog-content {
+.book-content {
   width: 100%;
   max-width: 960px;
   margin: 0 auto;
 }
 
-/* 文章网格 - 两列并排，64px间隙 */
-.articles-grid {
+/* 书籍网格 - 两列并排，64px间隙 */
+.books-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 64px;
   justify-items: stretch;
 }
 
-/* 文章卡片 */
-.article-card {
+/* 书籍卡片 */
+.book-card {
   background: #ffffff;
   border: 1px solid #e5e7eb;
   border-radius: 12px;
@@ -176,17 +166,16 @@ onMounted(() => {
   flex-direction: column;
   width: 100%;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-  cursor: pointer;
 }
 
-.article-card:hover {
+.book-card:hover {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   transform: translateY(-2px);
   z-index: 1;
 }
 
 /* 封面 - 2:1 比例 */
-.article-cover {
+.book-cover {
   width: 100%;
   aspect-ratio: 2 / 1;
   background: #f9fafb;
@@ -214,15 +203,15 @@ onMounted(() => {
   font-size: 0.875rem;
 }
 
-/* 文章信息 */
-.article-info {
+/* 书籍信息 */
+.book-info {
   padding: 1.2rem;
   flex: 1;
   display: flex;
   flex-direction: column;
 }
 
-.article-title {
+.book-title {
   font-size: 1.2rem;
   font-weight: 600;
   color: #111827;
@@ -230,15 +219,15 @@ onMounted(() => {
   line-height: 1.4;
 }
 
-.article-meta {
+.book-meta {
   margin-bottom: 0.8rem;
   display: flex;
   flex-direction: column;
   gap: 0.4rem;
 }
 
-.article-author,
-.article-date {
+.book-author,
+.book-date {
   display: flex;
   align-items: center;
   font-size: 0.8rem;
@@ -252,14 +241,14 @@ onMounted(() => {
   color: #6b7280;
 }
 
-/* 文章摘要 */
-.article-excerpt {
+/* 书籍简介 */
+.book-description {
   margin-top: auto;
   padding-top: 0.8rem;
   border-top: 1px solid #e5e7eb;
 }
 
-.article-excerpt p {
+.book-description p {
   font-size: 0.8rem;
   line-height: 1.6;
   color: #6b7280;
@@ -307,25 +296,31 @@ onMounted(() => {
 
 /* 响应式设计 */
 @media (max-width: 768px) {
-  .blog-container {
+  .book-container {
     padding: 1.6rem 0.8rem;
   }
 
-  .articles-grid {
+  .books-grid {
     grid-template-columns: 1fr;
     gap: 1.6rem;
   }
 
-  .article-card {
+  .book-card {
     border-radius: 12px;
     border: 1px solid #e5e7eb;
   }
 
-  .article-info {
+  .book-card:first-child,
+  .book-card:last-child {
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+  }
+
+  .book-info {
     padding: 0.8rem;
   }
 
-  .article-title {
+  .book-title {
     font-size: 1rem;
   }
 }

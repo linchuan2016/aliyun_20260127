@@ -103,7 +103,9 @@ class Article(Base):
     author = Column(String(200), nullable=False, comment="作者")
     original_url = Column(String(1000), comment="原文地址")
     category = Column(String(100), comment="分类")
-    content = Column(Text, comment="文章内容")
+    content = Column(Text, comment="文章内容（中文）")
+    content_en = Column(Text, comment="文章内容（英文）")
+    cover_image = Column(String(1000), comment="封面图片URL或本地路径")
     excerpt = Column(Text, comment="文章摘要")
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
@@ -118,7 +120,36 @@ class Article(Base):
             "original_url": self.original_url,
             "category": self.category,
             "content": self.content,
+            "content_en": self.content_en,
+            "cover_image": self.cover_image,
             "excerpt": self.excerpt,
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+            "updated_at": self.updated_at.isoformat() if self.updated_at else None,
+        }
+
+
+class Book(Base):
+    """书籍模型"""
+    __tablename__ = "books"
+
+    id = Column(Integer, primary_key=True, index=True)
+    title = Column(String(500), nullable=False, comment="书名")
+    cover_image = Column(String(1000), comment="封面图片URL或本地路径")
+    author = Column(String(200), nullable=False, comment="作者")
+    publish_date = Column(DateTime(timezone=True), nullable=False, comment="出版时间")
+    description = Column(Text, comment="书籍简介")
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+
+    def to_dict(self):
+        """转换为字典"""
+        return {
+            "id": self.id,
+            "title": self.title,
+            "cover_image": self.cover_image,
+            "author": self.author,
+            "publish_date": self.publish_date.isoformat() if self.publish_date else None,
+            "description": self.description,
             "created_at": self.created_at.isoformat() if self.created_at else None,
             "updated_at": self.updated_at.isoformat() if self.updated_at else None,
         }

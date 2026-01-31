@@ -17,28 +17,38 @@ my-fullstack-app/
 │   ├── main.py      # 主应用文件
 │   ├── database.py  # 数据库配置
 │   ├── models.py    # 数据模型
+│   ├── schemas.py   # Pydantic 模型
+│   ├── auth.py      # 认证相关
 │   ├── init_db.py   # 数据库初始化脚本
+│   ├── export_articles.py  # 导出文章脚本
+│   ├── import_articles.py # 导入文章脚本
+│   ├── download_book_covers.py      # 下载书籍封面
+│   ├── download_article_covers.py   # 下载文章封面
+│   ├── scrape_notion_article.py     # 爬取Notion文章
 │   └── requirements.txt
 ├── frontend/        # Vue 3 前端
 │   ├── src/
 │   │   ├── App.vue  # 主组件
-│   │   └── components/
-│   │       └── ProductCard.vue  # 产品卡片组件
+│   │   ├── views/   # 页面组件
+│   │   ├── components/  # 通用组件
+│   │   ├── router/  # 路由配置
+│   │   └── composables/ # 组合式函数
+│   ├── public/      # 静态资源
+│   │   ├── book-covers/    # 书籍封面
+│   │   ├── article-covers/ # 文章封面
+│   │   └── icons/   # 图标
 │   ├── package.json
 │   └── vite.config.js
-├── deploy/          # 部署配置
-│   ├── my-fullstack-app.service      # systemd 服务文件（HTTP）
-│   ├── my-fullstack-app-ssl.service  # systemd 服务文件（HTTPS）
-│   ├── nginx.conf                     # Nginx 配置（HTTP）
-│   ├── nginx-ssl.conf                 # Nginx 配置（HTTPS）
-│   ├── apply-ssl-complete-fixed.sh    # SSL 配置应用脚本
-│   ├── upload-ssl-cert.bat            # SSL 证书上传脚本（Windows）
-│   ├── upload-ssl-cert.ps1            # SSL 证书上传脚本（PowerShell）
-│   └── sync-to-server.ps1             # 代码同步脚本
-├── .vscode/         # 编辑器配置
-│   ├── settings.json      # VS Code/Cursor 设置
-│   └── extensions.json    # 推荐插件列表
+├── data/            # 数据文件
+│   └── articles.json # 文章数据（用于Git同步）
+├── deploy/          # 部署配置和脚本
+│   ├── my-fullstack-app.service      # systemd 服务文件
+│   ├── nginx.conf                     # Nginx 配置
+│   ├── sync-on-server-complete.sh     # 服务器同步脚本
+│   └── sync-quick.ps1                 # 快速同步脚本（Windows）
+├── scripts/         # 辅助脚本
 ├── start-local.ps1  # 本地启动脚本（Windows）
+├── start-local.bat  # 本地启动脚本（批处理）
 └── README.md
 ```
 

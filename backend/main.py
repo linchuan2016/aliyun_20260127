@@ -8,11 +8,12 @@ from sqlalchemy.orm import Session
 
 # 导入数据库相关（必须在 models 之前）
 from database import get_db, engine, Base
-from models import Product, User, Memo, Article
+from models import Product, User, Memo, Article, Book
 from schemas import (
     UserRegister, UserLogin, Token, UserResponse,
     MemoCreate, MemoUpdate, MemoResponse,
-    ArticleCreate, ArticleUpdate, ArticleResponse
+    ArticleCreate, ArticleUpdate, ArticleResponse,
+    BookCreate, BookUpdate, BookResponse
 )
 from auth import (
     get_password_hash,
@@ -485,6 +486,8 @@ async def create_article(
         original_url=article_data.original_url,
         category=article_data.category,
         content=article_data.content,
+        content_en=article_data.content_en,
+        cover_image=article_data.cover_image,
         excerpt=article_data.excerpt
     )
     db.add(article)
@@ -521,6 +524,14 @@ async def update_article(
         article.category = article_data.category
     if article_data.content is not None:
         article.content = article_data.content
+    if article_data.content_en is not None:
+        article.content_en = article_data.content_en
+    # 处理cover_image
+    # 在Pydantic中，如果字段在JSON中存在，即使值为null，也会被解析
+    # 为了确保cover_image能正确更新，我们总是更新它（如果它在payload中）
+    # 使用 model_dump 可以检查字段是否被设置，但为了简化，我们总是更新
+    # 如果前端发送了cover_image字段（包括null），我们就更新它
+    article.cover_image = article_data.cover_image if article_data.cover_image else None
     if article_data.excerpt is not None:
         article.excerpt = article_data.excerpt
     
@@ -541,6 +552,118 @@ async def delete_article(
         raise HTTPException(status_code=404, detail="Article not found")
     
     db.delete(article)
+    db.commit()
+    return None
+
+
+# ==================== 书籍相关路由 ====================
+
+@app.get("/api/books", response_model=List[BookResponse])
+async def get_books(
+    skip: int = 0,
+    limit: int = 100,
+    order_by: str = "publish_date",
+    order: str = "desc",
+    db: Session = Depends(get_db)
+):
+    """获取书籍列表（支持排序）"""
+    # 验证排序字段
+    valid_order_fields = ["title", "publish_date", "author", "created_at"]
+    if order_by not in valid_order_fields:
+        order_by = "publish_date"
+    
+    # 验证排序方向
+    if order.lower() not in ["asc", "desc"]:
+        order = "desc"
+    
+    # 构建查询
+    query = db.query(Book)
+    
+    # 排序
+    order_column = getattr(Book, order_by)
+    if order.lower() == "desc":
+        query = query.order_by(order_column.desc())
+    else:
+        query = query.order_by(order_column.asc())
+    
+    # 分页
+    books = query.offset(skip).limit(limit).all()
+    
+    return [book.to_dict() for book in books]
+
+
+@app.post("/api/admin/books", response_model=BookResponse)
+async def create_book(
+    book_data: BookCreate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_active_user)
+):
+    """创建书籍（需要管理员权限）"""
+    from datetime import datetime
+    
+    # 解析出版时间
+    try:
+        publish_date = datetime.fromisoformat(book_data.publish_date.replace('Z', '+00:00'))
+    except:
+        publish_date = datetime.now()
+    
+    book = Book(
+        title=book_data.title,
+        cover_image=book_data.cover_image,
+        author=book_data.author,
+        publish_date=publish_date,
+        description=book_data.description
+    )
+    db.add(book)
+    db.commit()
+    db.refresh(book)
+    return book.to_dict()
+
+
+@app.patch("/api/admin/books/{book_id}", response_model=BookResponse)
+async def update_book(
+    book_id: int,
+    book_data: BookUpdate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_active_user)
+):
+    """更新书籍（需要管理员权限）"""
+    book = db.query(Book).filter(Book.id == book_id).first()
+    if not book:
+        raise HTTPException(status_code=404, detail="Book not found")
+    
+    if book_data.title is not None:
+        book.title = book_data.title
+    if book_data.cover_image is not None:
+        book.cover_image = book_data.cover_image
+    if book_data.author is not None:
+        book.author = book_data.author
+    if book_data.publish_date is not None:
+        from datetime import datetime
+        try:
+            book.publish_date = datetime.fromisoformat(book_data.publish_date.replace('Z', '+00:00'))
+        except:
+            pass
+    if book_data.description is not None:
+        book.description = book_data.description
+    
+    db.commit()
+    db.refresh(book)
+    return book.to_dict()
+
+
+@app.delete("/api/admin/books/{book_id}")
+async def delete_book(
+    book_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_active_user)
+):
+    """删除书籍（需要管理员权限）"""
+    book = db.query(Book).filter(Book.id == book_id).first()
+    if not book:
+        raise HTTPException(status_code=404, detail="Book not found")
+    
+    db.delete(book)
     db.commit()
     return None
 

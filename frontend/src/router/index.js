@@ -5,6 +5,8 @@ import CalendarPage from '../views/CalendarPage.vue'
 import NotesPage from '../views/NotesPage.vue'
 import RAG from '../views/RAG.vue'
 import Blog from '../views/Blog.vue'
+import ArticleDetail from '../views/ArticleDetail.vue'
+import Book from '../views/Book.vue'
 import Login from '../views/Login.vue'
 import Register from '../views/Register.vue'
 import RegisterSuccess from '../views/RegisterSuccess.vue'
@@ -12,6 +14,7 @@ import AdminLogin from '../views/AdminLogin.vue'
 import AdminSetup from '../views/AdminSetup.vue'
 import Admin from '../views/Admin.vue'
 import AdminArticles from '../views/AdminArticles.vue'
+import AdminBooks from '../views/AdminBooks.vue'
 import My from '../views/My.vue'
 import { token } from '../composables/useAuth'
 
@@ -47,6 +50,16 @@ const routes = [
     component: Blog
   },
   {
+    path: '/blog/:id',
+    name: 'ArticleDetail',
+    component: ArticleDetail
+  },
+  {
+    path: '/book',
+    name: 'Book',
+    component: Book
+  },
+  {
     path: '/login',
     name: 'Login',
     component: Login
@@ -80,7 +93,13 @@ const routes = [
   {
     path: '/admin/articles',
     name: 'AdminArticles',
-    component: AdminArticles,
+    component: Admin,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/admin/books',
+    name: 'AdminBooks',
+    component: Admin,
     meta: { requiresAuth: true }
   },
   {
