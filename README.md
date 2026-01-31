@@ -20,11 +20,13 @@ my-fullstack-app/
 │   ├── schemas.py   # Pydantic 模型
 │   ├── auth.py      # 认证相关
 │   ├── init_db.py   # 数据库初始化脚本
-│   ├── export_articles.py  # 导出文章脚本
-│   ├── import_articles.py # 导入文章脚本
-│   ├── download_book_covers.py      # 下载书籍封面
-│   ├── download_article_covers.py   # 下载文章封面
-│   ├── scrape_notion_article.py     # 爬取Notion文章
+│   ├── import_articles.py          # 导入文章脚本（迁移工具）
+│   ├── export_articles.py          # 导出文章脚本（备份工具）
+│   ├── download_book_covers.py      # 下载书籍封面工具
+│   ├── download_article_covers.py   # 下载文章封面工具
+│   ├── scrape_notion_article.py     # 爬取Notion文章工具
+│   ├── update_cover_images.py       # 更新封面图片路径工具
+│   └── add_book.py                  # 添加书籍工具
 │   └── requirements.txt
 ├── frontend/        # Vue 3 前端
 │   ├── src/
@@ -38,8 +40,8 @@ my-fullstack-app/
 │   ├── package.json
 │   └── vite.config.js
 ├── data/            # 数据文件
-│   ├── products.db      # SQLite 数据库
-│   ├── articles.json    # 文章数据（用于Git同步）
+│   ├── products.db      # SQLite 数据库（包含所有数据：文章、书籍、产品、用户等）
+│   │                   # 这是唯一的数据存储文件，所有数据都在这里
 │   ├── book-covers/     # 书籍封面图片
 │   └── article-covers/  # 文章封面图片
 ├── scripts/         # 脚本文件夹
@@ -161,50 +163,43 @@ API 文档：http://127.0.0.1:8000/docs
 - **NotebookLM** - 智能笔记助手
 - **Manus** - 智能文档处理
 
-## 文章数据同步
+## 文章数据管理
 
-Blog 文章数据可以导出到 JSON 文件并同步到 Git 仓库，实现跨环境的数据持久化和同步。
+**文章数据现在直接存储在数据库中**（`data/products.db`），不再需要 JSON 文件进行同步。
 
-### 导出文章到 Git
+### 数据存储方式
 
-1. **使用便捷脚本（推荐）**
-   ```powershell
-   # Windows 本地执行
-   .\export-and-sync-articles.ps1
-   ```
-   这个脚本会：
-   - 自动导出所有文章到 `data/articles.json`
-   - 检查 Git 状态
-   - 提交更改并可选推送到 Gitee
+- **主要存储**：所有文章数据存储在 SQLite 数据库中（`data/products.db`）
+- **备份文件**：`data/articles.json` 可作为备份或迁移工具（可选）
 
-2. **手动导出**
-   ```powershell
-   cd backend
-   ..\venv\Scripts\python.exe export_articles.py
-   ```
-   导出的文件位于 `data/articles.json`
+### 初始化数据库
 
-3. **提交到 Git**
-   ```bash
-   git add data/articles.json
-   git commit -m "更新文章数据"
-   git push gitee main
-   ```
+数据库初始化脚本（`backend/init_db.py`）会自动：
+1. 创建数据库表结构
+2. 如果数据库为空且存在 `articles.json`，会自动导入文章数据
+3. 初始化默认数据（产品、文章、书籍等）
 
-### 在服务器上导入文章
+### 导出文章数据（备份）
 
-服务器上的同步脚本（`scripts/deploy/阿里云服务器直接同步命令.sh` 和 `scripts/deploy/sync-on-server-complete.sh`）会自动检测并导入 `data/articles.json` 文件。
+如果需要导出文章数据作为备份：
 
-如果文章已存在（根据标题和发布时间判断），默认会更新现有文章。可以通过修改 `backend/import_articles.py` 中的 `update_existing` 参数来控制行为。
+```powershell
+cd backend
+..\venv\Scripts\python.exe export_articles.py
+```
 
-### 手动导入文章
+导出的文件位于 `data/articles.json`，可以提交到 Git 作为备份。
+
+### 迁移文章数据
+
+如果已有 `articles.json` 文件，可以运行迁移脚本：
 
 ```bash
-# 在服务器上执行
-cd /var/www/my-fullstack-app/backend
-source ../venv/bin/activate
-python import_articles.py
+cd backend
+python migrate_articles_to_db.py
 ```
+
+这会将 JSON 文件中的文章导入到数据库。
 
 ## 编辑器设置
 

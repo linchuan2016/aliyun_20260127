@@ -28,7 +28,7 @@
           <div class="book-cover">
             <img 
               v-if="book.cover_image" 
-              :src="book.cover_image" 
+              :src="getCoverImageUrl(book.cover_image)" 
               :alt="book.title"
               class="cover-image"
               @error="handleImageError"
@@ -103,6 +103,16 @@ const fetchBooks = async () => {
   } finally {
     loading.value = false
   }
+}
+
+const getCoverImageUrl = (coverImage) => {
+  if (!coverImage) return ''
+  // 如果是完整URL，直接返回
+  if (coverImage.startsWith('http://') || coverImage.startsWith('https://')) {
+    return coverImage
+  }
+  // 如果是相对路径，在开发环境中加上API地址
+  return `${API_BASE_URL}${coverImage}`
 }
 
 const formatDate = (dateString) => {

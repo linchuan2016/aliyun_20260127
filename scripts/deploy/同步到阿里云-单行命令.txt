@@ -1,5 +1,0 @@
-# 在阿里云服务器上直接执行的单行命令（最可靠的方式）
-# 复制以下命令到服务器终端执行
-
-cd /var/www/my-fullstack-app && git stash push -m "backup-$(date +%Y%m%d_%H%M%S)" 2>/dev/null || true && git fetch gitee main && git reset --hard gitee/main && cd backend && source ../venv/bin/activate && pip install --upgrade pip --quiet && pip install -r requirements.txt --quiet && python init_db.py 2>&1 || echo "数据库初始化完成" && [ -f ../data/articles.json ] && python import_articles.py 2>&1 || echo "文章导入完成" && cd ../frontend && export NODE_OPTIONS='--max-old-space-size=2048' && npm install --silent && npm run build && systemctl daemon-reload && systemctl restart my-fullstack-app && sleep 5 && systemctl restart nginx && sleep 2 && systemctl status my-fullstack-app --no-pager -l | head -15 && curl -s http://127.0.0.1:8000/api/health && echo "" && echo "同步完成！"
-

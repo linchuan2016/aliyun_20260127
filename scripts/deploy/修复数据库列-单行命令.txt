@@ -1,5 +1,0 @@
-# 在阿里云服务器上执行的单行修复命令
-# 先同步代码，然后执行此命令修复数据库
-
-cd /var/www/my-fullstack-app && git fetch gitee main && git reset --hard gitee/main && cd backend && source ../venv/bin/activate && python add_missing_columns.py && python init_db.py && systemctl restart my-fullstack-app && sleep 3 && curl -s http://127.0.0.1:8000/api/health && echo "" && curl -s http://127.0.0.1:8000/api/articles | head -c 200 && echo "" && curl -s http://127.0.0.1:8000/api/books | head -c 200 && echo "" && echo "修复完成！"
-

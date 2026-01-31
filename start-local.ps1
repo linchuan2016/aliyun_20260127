@@ -79,7 +79,7 @@ Write-Host ""
 
 # Initialize database (only if not exists)
 Write-Host "3. Checking database..." -ForegroundColor Yellow
-$dbPath = Join-Path $backendPath "products.db"
+$dbPath = Join-Path $projectRoot "data\products.db"
 if (Test-Path $dbPath) {
     Write-Host "   Existing database found, preserving data..." -ForegroundColor Green
     Write-Host "   Running init_db.py to ensure tables exist (will not overwrite existing data)..." -ForegroundColor Gray

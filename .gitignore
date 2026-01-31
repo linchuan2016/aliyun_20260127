@@ -13,8 +13,8 @@ build/
 *.db
 *.sqlite
 *.sqlite3
-# 但保留 data 文件夹中的其他文件（如 articles.json, book-covers/, article-covers/）
-!data/articles.json
+# 但保留 data 文件夹中的其他文件（如 book-covers/, article-covers/）
+# articles.json 现在作为可选备份文件，可以提交到 Git
 !data/book-covers/
 !data/article-covers/
 
@@ -79,11 +79,22 @@ backend/add_article.py
 deploy/*.txt
 deploy/清理计划.md
 
-# One-time migration scripts (already executed)
+# One-time migration scripts (already executed, can be deleted)
 backend/add_article_fields.py
 backend/add_description_column.py
 backend/update_book_descriptions.py
 backend/update_first_article.py
+backend/delete_duplicate_article.py
+backend/migrate_articles_to_db.py
+backend/verify_db_migration.py
+backend/fix_all_cover_paths.py
+backend/fix_article_covers.py
+backend/add_missing_columns.py
+backend/force_init_db.py
+backend/test_cover_images.py
+
+# Deprecated scripts (no longer needed)
+export-and-sync-articles.ps1
 
 # Deploy directory cleanup - removed files (for reference)
 # All fix-*.sh scripts (one-time fixes, already resolved)

@@ -29,7 +29,7 @@
           <div class="article-cover">
             <img 
               v-if="article.cover_image" 
-              :src="article.cover_image" 
+              :src="getCoverImageUrl(article.cover_image)" 
               :alt="article.title"
               class="cover-image"
               @error="handleImageError"
@@ -106,6 +106,16 @@ const fetchArticles = async () => {
   } finally {
     loading.value = false
   }
+}
+
+const getCoverImageUrl = (coverImage) => {
+  if (!coverImage) return ''
+  // 如果是完整URL，直接返回
+  if (coverImage.startsWith('http://') || coverImage.startsWith('https://')) {
+    return coverImage
+  }
+  // 如果是相对路径，在开发环境中加上API地址
+  return `${API_BASE_URL}${coverImage}`
 }
 
 const formatDate = (dateString) => {

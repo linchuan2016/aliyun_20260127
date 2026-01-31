@@ -110,7 +110,27 @@ def init_db():
             print("管理员账号未创建，请通过 /admin/setup 页面设置管理员密码")
         
         # 初始化文章数据
-        if db.query(Article).count() == 0:
+        article_count = db.query(Article).count()
+        if article_count == 0:
+            # 尝试从 articles.json 导入（如果存在）
+            import os
+            json_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data", "articles.json")
+            if os.path.exists(json_path):
+                print("检测到 articles.json，尝试导入...")
+                try:
+                    from import_articles import import_articles
+                    imported = import_articles(json_path, update_existing=False)
+                    if imported > 0:
+                        print(f"✓ 从 JSON 导入 {imported} 篇文章")
+                        # 重新检查，如果导入成功则跳过默认初始化
+                        if db.query(Article).count() > 0:
+                            print("文章数据已从 JSON 导入，跳过默认初始化")
+                            db.close()
+                            return
+                except Exception as e:
+                    print(f"⚠️  从 JSON 导入失败: {e}，使用默认初始化")
+            
+            # 如果没有 JSON 或导入失败，使用默认初始化
             article = Article(
                 title="蒸汽、钢铁与无限心智（Steam, Steel, and Infinite Minds）",
                 publish_date=datetime(2025, 12, 23),
