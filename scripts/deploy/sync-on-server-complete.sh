@@ -12,28 +12,63 @@ echo "开始同步代码并部署 (时间: $TIMESTAMP)"
 echo "=========================================="
 echo ""
 
+# 步骤 0: 修复 Git 权限问题
+echo ">>> 步骤 0: 修复 Git 权限..."
+CURRENT_USER=$(whoami)
+if [ -d ".git" ]; then
+    # 修复 .git 目录权限
+    sudo chown -R "$CURRENT_USER:$CURRENT_USER" .git 2>/dev/null || true
+    sudo chmod -R 755 .git 2>/dev/null || true
+    # 清理锁定文件
+    rm -f .git/index.lock .git/FETCH_HEAD.lock 2>/dev/null || true
+    # 配置安全目录
+    git config --global --add safe.directory "$DEPLOY_PATH" 2>/dev/null || true
+    echo "✓ Git 权限已修复"
+else
+    echo "⚠ .git 目录不存在，跳过权限修复"
+fi
+echo ""
+
 # 步骤 1: 处理 Git 本地修改
 echo ">>> 步骤 1: 处理 Git 本地修改..."
 cd $DEPLOY_PATH
-if [ -n "$(git status --porcelain)" ]; then
+# 先清理可能的锁定文件
+rm -f .git/index.lock .git/FETCH_HEAD.lock 2>/dev/null || true
+
+if [ -n "$(git status --porcelain 2>/dev/null)" ]; then
     echo "检测到本地修改，正在保存..."
-    git stash push -m "backup-$TIMESTAMP" || true
-    echo "本地修改已保存到 stash"
+    git stash push -m "backup-$TIMESTAMP" 2>/dev/null || {
+        echo "⚠ Stash 失败，尝试直接重置..."
+        git reset --hard HEAD 2>/dev/null || true
+    }
+    echo "本地修改已处理"
 fi
 echo "✓ Git 状态检查完成"
 echo ""
 
 # 步骤 2: 拉取最新代码
 echo ">>> 步骤 2: 从 Gitee 拉取最新代码..."
-git fetch gitee main
+# 确保权限正确
+sudo chown -R "$CURRENT_USER:$CURRENT_USER" .git 2>/dev/null || true
+rm -f .git/FETCH_HEAD.lock 2>/dev/null || true
+
+git fetch gitee main 2>&1
 if [ $? -ne 0 ]; then
-    echo "✗ Git fetch 失败，尝试清理后重试..."
-    git clean -fd
-    git fetch gitee main
+    echo "✗ Git fetch 失败，尝试修复权限后重试..."
+    sudo chown -R "$CURRENT_USER:$CURRENT_USER" .git
+    sudo chmod -R 755 .git
+    rm -f .git/FETCH_HEAD.lock
+    git fetch gitee main 2>&1
 fi
-git reset --hard gitee/main
+
+git reset --hard gitee/main 2>&1
+
+# 确保图片文件从 Git 中恢复（如果被忽略或删除）
+echo "恢复图片文件..."
+git checkout gitee/main -- data/book-covers/ data/article-covers/ 2>/dev/null || true
+
 echo "✓ 代码拉取成功"
-echo "当前提交: $(git log -1 --oneline)"
+echo "当前提交: $(git log -1 --oneline 2>/dev/null || echo '无法获取提交信息')"
 echo ""
 
 # 步骤 3: 更新后端依赖
@@ -83,12 +118,18 @@ echo "✓ 封面路径已更新"
 echo ""
 
 # 步骤 7: 确保图片文件存在
-echo ">>> 步骤 7: 检查并下载图片文件..."
+echo ">>> 步骤 7: 检查并确保图片文件存在..."
 sudo mkdir -p "$DATA_DIR/article-covers" "$DATA_DIR/book-covers"
 sudo chown -R "$SERVICE_USER:$SERVICE_USER" "$DATA_DIR"
 
+# 首先尝试从 Git 恢复图片文件
+echo "从 Git 恢复图片文件..."
+cd "$DEPLOY_PATH"
+git checkout gitee/main -- data/book-covers/ data/article-covers/ 2>/dev/null || true
+
+# 如果仍然不存在，尝试下载
 if [ ! -f "$DATA_DIR/article-covers/Steam.jpg" ]; then
-    echo "下载文章封面..."
+    echo "文章封面不存在，尝试下载..."
     sudo -u "$SERVICE_USER" bash << 'DOWNLOAD_EOF'
 cd /var/www/my-fullstack-app/backend
 source ../venv/bin/activate
@@ -97,13 +138,35 @@ DOWNLOAD_EOF
 fi
 
 if [ ! -f "$DATA_DIR/book-covers/s3259913.jpg" ] || [ ! -f "$DATA_DIR/book-covers/s1070959.jpg" ]; then
-    echo "下载书籍封面..."
+    echo "书籍封面不存在，尝试下载..."
     sudo -u "$SERVICE_USER" bash << 'DOWNLOAD_EOF'
 cd /var/www/my-fullstack-app/backend
 source ../venv/bin/activate
 python3 download_book_covers.py
 DOWNLOAD_EOF
 fi
+
+# 验证文件存在
+echo "验证图片文件..."
+if [ -f "$DATA_DIR/book-covers/s3259913.jpg" ]; then
+    echo "  ✓ s3259913.jpg 存在"
+else
+    echo "  ✗ s3259913.jpg 缺失"
+fi
+if [ -f "$DATA_DIR/book-covers/s1070959.jpg" ]; then
+    echo "  ✓ s1070959.jpg 存在"
+else
+    echo "  ✗ s1070959.jpg 缺失"
+fi
+if [ -f "$DATA_DIR/article-covers/Steam.jpg" ]; then
+    echo "  ✓ Steam.jpg 存在"
+else
+    echo "  ✗ Steam.jpg 缺失"
+fi
+
+# 确保权限正确
+sudo chown -R "$SERVICE_USER:$SERVICE_USER" "$DATA_DIR"
+sudo chmod -R 755 "$DATA_DIR"
 
 echo "✓ 图片文件检查完成"
 echo ""
