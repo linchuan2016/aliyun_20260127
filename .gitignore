@@ -70,3 +70,8 @@ backend/update_admin_password.py
 backend/update_icons.py
 backend/delete_admin.py
 backend/add_article.py
+
+# Temporary deployment documentation files
+deploy/*.txt
+!deploy/最终完整修复命令.txt
+deploy/清理计划.md

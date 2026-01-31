@@ -150,6 +150,51 @@ API 文档：http://127.0.0.1:8000/docs
 - **NotebookLM** - 智能笔记助手
 - **Manus** - 智能文档处理
 
+## 文章数据同步
+
+Blog 文章数据可以导出到 JSON 文件并同步到 Git 仓库，实现跨环境的数据持久化和同步。
+
+### 导出文章到 Git
+
+1. **使用便捷脚本（推荐）**
+   ```powershell
+   # Windows 本地执行
+   .\export-and-sync-articles.ps1
+   ```
+   这个脚本会：
+   - 自动导出所有文章到 `data/articles.json`
+   - 检查 Git 状态
+   - 提交更改并可选推送到 Gitee
+
+2. **手动导出**
+   ```powershell
+   cd backend
+   ..\venv\Scripts\python.exe export_articles.py
+   ```
+   导出的文件位于 `data/articles.json`
+
+3. **提交到 Git**
+   ```bash
+   git add data/articles.json
+   git commit -m "更新文章数据"
+   git push gitee main
+   ```
+
+### 在服务器上导入文章
+
+服务器上的同步脚本（`deploy/阿里云服务器直接执行命令.sh` 和 `deploy/sync-on-server-complete.sh`）会自动检测并导入 `data/articles.json` 文件。
+
+如果文章已存在（根据标题和发布时间判断），默认会更新现有文章。可以通过修改 `backend/import_articles.py` 中的 `update_existing` 参数来控制行为。
+
+### 手动导入文章
+
+```bash
+# 在服务器上执行
+cd /var/www/my-fullstack-app/backend
+source ../venv/bin/activate
+python import_articles.py
+```
+
 ## 编辑器设置
 
 ### Vue 文件语法高亮
@@ -170,14 +215,39 @@ API 文档：http://127.0.0.1:8000/docs
 
 ### 阿里云服务器部署
 
-#### 1. 基础部署（HTTP）
+#### 快速同步代码（在服务器上执行）
 
-1. 将代码同步到服务器
-2. 配置 Nginx：`deploy/nginx.conf`
-3. 配置 systemd：`deploy/my-fullstack-app.service`
-4. 启动服务
+```bash
+cd /var/www/my-fullstack-app && \
+git stash push -m backup 2>/dev/null || true && \
+git fetch gitee main && \
+git reset --hard gitee/main
+```
 
-#### 2. SSL 部署（HTTPS）
+#### 完整部署流程
+
+1. **同步代码并创建服务文件**
+   ```bash
+   # 在服务器上执行完整修复命令（包含服务文件创建）
+   # 参考 deploy/最终完整修复命令.txt
+   ```
+
+2. **配置 Nginx**
+   ```bash
+   sudo cp deploy/nginx.conf /etc/nginx/sites-available/my-fullstack-app
+   sudo ln -s /etc/nginx/sites-available/my-fullstack-app /etc/nginx/sites-enabled/
+   sudo nginx -t
+   sudo systemctl restart nginx
+   ```
+
+3. **启动服务**
+   ```bash
+   sudo systemctl daemon-reload
+   sudo systemctl enable my-fullstack-app
+   sudo systemctl start my-fullstack-app
+   ```
+
+#### SSL 部署（HTTPS）
 
 1. **上传 SSL 证书**
    ```powershell
@@ -198,7 +268,7 @@ API 文档：http://127.0.0.1:8000/docs
    sudo systemctl restart nginx
    ```
 
-详细部署步骤请参考 `deploy/` 目录下的配置文件。
+详细部署步骤请参考 `deploy/README.md`。
 
 ## 许可证
 

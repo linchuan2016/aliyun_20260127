@@ -77,23 +77,21 @@ if (Test-Path $requirementsPath) {
 }
 Write-Host ""
 
-# Initialize database
-Write-Host "3. Initializing database..." -ForegroundColor Yellow
+# Initialize database (only if not exists)
+Write-Host "3. Checking database..." -ForegroundColor Yellow
 $dbPath = Join-Path $backendPath "products.db"
 if (Test-Path $dbPath) {
-    Write-Host "   Existing database found, will reinitialize..." -ForegroundColor Gray
-    try {
-        Remove-Item $dbPath -Force -ErrorAction Stop
-    } catch {
-        Write-Host "   Warning: Cannot delete database file (may be in use), will try to reinitialize anyway..." -ForegroundColor Yellow
-    }
+    Write-Host "   Existing database found, preserving data..." -ForegroundColor Green
+    Write-Host "   Running init_db.py to ensure tables exist (will not overwrite existing data)..." -ForegroundColor Gray
+} else {
+    Write-Host "   Database not found, will initialize..." -ForegroundColor Gray
 }
 
 Push-Location $backendPath
 try {
     & $venvPython init_db.py
     if ($LASTEXITCODE -eq 0) {
-        Write-Host "   Database initialized successfully" -ForegroundColor Green
+        Write-Host "   Database check/initialization completed" -ForegroundColor Green
     } else {
         Write-Host "   Warning: Database initialization may have issues" -ForegroundColor Yellow
     }

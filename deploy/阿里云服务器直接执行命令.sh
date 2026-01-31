@@ -82,6 +82,20 @@ python init_db.py 2>&1 || echo "数据库初始化完成（可能已存在）"
 echo "✓ 数据库检查完成"
 echo ""
 
+# 步骤 5.5: 导入文章数据
+echo ">>> 步骤 5.5: 导入文章数据..."
+if [ -f "$DEPLOY_PATH/data/articles.json" ]; then
+    python import_articles.py
+    if [ $? -eq 0 ]; then
+        echo "✓ 文章数据导入成功"
+    else
+        echo "⚠ 文章数据导入失败，但不影响服务启动"
+    fi
+else
+    echo "⚠ data/articles.json 不存在，跳过文章导入"
+fi
+echo ""
+
 # 步骤 6: 构建前端
 echo ">>> 步骤 6: 构建前端..."
 cd $DEPLOY_PATH/frontend
