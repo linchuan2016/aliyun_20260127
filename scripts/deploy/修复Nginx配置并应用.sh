@@ -68,77 +68,95 @@ echo "✓ 配置已复制"
 echo ""
 
 # 6. 检查并修复重复的 upstream（如果存在）
-echo ">>> 6. 检查配置语法..."
-if sudo nginx -t 2>&1 | grep -q "duplicate upstream"; then
-    echo "⚠ 发现重复的 upstream，正在修复..."
-    
-    # 创建一个临时文件，移除重复的 upstream
-    sudo python3 << 'FIX_UPSTREAM_EOF'
+echo ">>> 6. 检查并修复重复的 upstream..."
+# 使用 sed 直接移除重复的 upstream attu（保留第一个）
+sudo sed -i.bak '/^upstream attu {/,/^}/ {
+    /^upstream attu {/ {
+        :check
+        n
+        /^}/! b check
+        /^}/ {
+            x
+            /attu/ {
+                d
+                x
+            }
+            x
+        }
+    }
+}' "$NGINX_CONF" 2>/dev/null || true
+
+# 更简单的方法：直接使用 awk 或 Python
+sudo python3 << 'FIX_UPSTREAM_EOF'
 import re
+import sys
 
 conf_file = "/etc/nginx/conf.d/my-fullstack-app.conf"
 
-with open(conf_file, 'r', encoding='utf-8') as f:
-    content = f.read()
-
-# 查找所有 upstream 块
-upstream_blocks = {}
-lines = content.split('\n')
-new_lines = []
-in_upstream = False
-current_upstream = None
-upstream_start = -1
-
-i = 0
-while i < len(lines):
-    line = lines[i]
+try:
+    with open(conf_file, 'r', encoding='utf-8') as f:
+        lines = f.readlines()
     
-    # 检测 upstream 开始
-    if re.match(r'^\s*upstream\s+(\w+)\s*\{', line):
-        upstream_name = re.match(r'^\s*upstream\s+(\w+)\s*\{', line).group(1)
-        if upstream_name in upstream_blocks:
-            # 这是重复的，跳过整个块
-            print(f"跳过重复的 upstream: {upstream_name}")
-            in_upstream = True
-            current_upstream = upstream_name
-            i += 1
-            # 跳过直到找到对应的 }
-            brace_count = 1
-            while i < len(lines) and brace_count > 0:
-                if '{' in lines[i]:
-                    brace_count += lines[i].count('{')
-                if '}' in lines[i]:
-                    brace_count -= lines[i].count('}')
-                i += 1
-            continue
-        else:
-            # 第一次出现，保留
-            upstream_blocks[upstream_name] = True
-            new_lines.append(line)
-            in_upstream = True
-            current_upstream = upstream_name
-    elif in_upstream:
-        new_lines.append(line)
-        if '}' in line:
-            brace_count = line.count('}')
-            if brace_count > 0:
+    new_lines = []
+    seen_upstreams = {}
+    in_upstream = False
+    current_upstream = None
+    skip_block = False
+    brace_count = 0
+    
+    for i, line in enumerate(lines):
+        # 检测 upstream 开始
+        upstream_match = re.match(r'^\s*upstream\s+(\w+)\s*\{', line)
+        if upstream_match:
+            upstream_name = upstream_match.group(1)
+            if upstream_name in seen_upstreams:
+                # 这是重复的，跳过整个块
+                print(f"跳过重复的 upstream: {upstream_name} (行 {i+1})")
+                skip_block = True
+                in_upstream = True
+                current_upstream = upstream_name
+                brace_count = 1
+                continue
+            else:
+                # 第一次出现，保留
+                seen_upstreams[upstream_name] = True
+                new_lines.append(line)
+                in_upstream = True
+                current_upstream = upstream_name
+                brace_count = 1
+                continue
+        
+        if skip_block:
+            # 计算大括号
+            brace_count += line.count('{') - line.count('}')
+            if brace_count <= 0:
+                skip_block = False
                 in_upstream = False
                 current_upstream = None
-    else:
+            continue
+        
         new_lines.append(line)
     
-    i += 1
-
-# 写回文件
-with open(conf_file, 'w', encoding='utf-8') as f:
-    f.write('\n'.join(new_lines))
-
-print("✓ 重复的 upstream 已移除")
-FIX_UPSTREAM_EOF
+    # 写回文件
+    with open(conf_file, 'w', encoding='utf-8') as f:
+        f.writelines(new_lines)
     
+    print("✓ 重复的 upstream 已移除")
+    sys.exit(0)
+except Exception as e:
+    print(f"✗ 修复失败: {e}")
+    sys.exit(1)
+FIX_UPSTREAM_EOF
+
+if [ $? -eq 0 ]; then
     echo "✓ 修复完成"
+else
+    echo "⚠ 修复可能未完全成功，继续测试配置"
 fi
 echo ""
+
+# 7. 测试 Nginx 配置
+echo ">>> 7. 测试 Nginx 配置..."
 
 # 7. 测试 Nginx 配置
 echo ">>> 7. 测试 Nginx 配置..."
