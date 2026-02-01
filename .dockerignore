@@ -1,0 +1,64 @@
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Python
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+*.egg
+*.egg-info
+dist
+build
+venv/
+env/
+ENV/
+
+# Node
+node_modules/
+npm-debug.log
+yarn-error.log
+.npm
+.pnpm-store
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# 数据文件（不包含在镜像中，使用 volume 挂载）
+data/*.db
+data/*.db-journal
+data/*.db-wal
+data/*.db-shm
+
+# 日志
+*.log
+logs/
+
+# 临时文件
+*.tmp
+*.temp
+.DS_Store
+Thumbs.db
+
+# 部署脚本（不需要在容器中）
+scripts/
+
+# SSL 证书（通过 volume 挂载）
+ssl/
+
+# 文档
+*.md
+README*
+
+# 环境变量文件（使用 .env）
+.env.local
+.env.*.local
+

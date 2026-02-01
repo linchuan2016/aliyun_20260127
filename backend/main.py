@@ -1,11 +1,12 @@
 import os
 from datetime import timedelta
 from typing import List
-from fastapi import FastAPI, Depends, HTTPException, status
+from fastapi import FastAPI, Depends, HTTPException, status, Cookie, Header
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.staticfiles import StaticFiles
 from sqlalchemy.orm import Session
+from typing import Optional
 
 # 导入数据库相关（必须在 models 之前）
 from database import get_db, engine, Base
@@ -14,7 +15,8 @@ from schemas import (
     UserRegister, UserLogin, Token, UserResponse,
     MemoCreate, MemoUpdate, MemoResponse,
     ArticleCreate, ArticleUpdate, ArticleResponse,
-    BookCreate, BookUpdate, BookResponse
+    BookCreate, BookUpdate, BookResponse,
+    ProductCreate, ProductUpdate, ProductResponse
 )
 from auth import (
     get_password_hash,
@@ -29,9 +31,17 @@ app = FastAPI(title="My Fullstack App API")
 # 配置静态文件服务（提供 data 文件夹的访问）
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = os.path.dirname(BASE_DIR)
-DATA_DIR = os.path.join(PROJECT_ROOT, "data")
+
+# 优先检查 Docker 容器内的路径 (/app/data)，然后是本地开发路径
+DATA_DIR = os.path.join(BASE_DIR, "data")  # Docker: /app/data, 本地: backend/data
+if not os.path.exists(DATA_DIR):
+    DATA_DIR = os.path.join(PROJECT_ROOT, "data")  # 本地开发: 项目根目录/data
+
 if os.path.exists(DATA_DIR):
     app.mount("/data", StaticFiles(directory=DATA_DIR), name="data")
+    print(f"Static files mounted from: {DATA_DIR}")
+else:
+    print(f"Warning: Data directory not found at {DATA_DIR}")
 
 # 确保数据库表已创建
 try:
@@ -90,6 +100,95 @@ async def get_product(product_name: str, db: Session = Depends(get_db)):
     if not product:
         return {"error": "Product not found"}, 404
     return {"product": product.to_dict()}
+
+@app.get("/api/admin/products", response_model=List[ProductResponse])
+async def get_admin_products(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_active_user)
+):
+    """管理员获取所有产品列表"""
+    products = db.query(Product).order_by(Product.order_index).all()
+    return [ProductResponse(**product.to_dict()) for product in products]
+
+@app.post("/api/admin/products", response_model=ProductResponse)
+async def create_product(
+    product: ProductCreate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_active_user)
+):
+    """创建产品"""
+    # 检查产品名称是否已存在
+    existing = db.query(Product).filter(Product.name == product.name).first()
+    if existing:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="产品名称已存在"
+        )
+    
+    db_product = Product(
+        name=product.name,
+        title=product.title,
+        description=product.description,
+        features=product.features,
+        image_url=product.image_url,
+        official_url=product.official_url,
+        order_index=product.order_index
+    )
+    db.add(db_product)
+    db.commit()
+    db.refresh(db_product)
+    return ProductResponse(**db_product.to_dict())
+
+@app.put("/api/admin/products/{product_id}", response_model=ProductResponse)
+async def update_product(
+    product_id: int,
+    product: ProductUpdate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_active_user)
+):
+    """更新产品"""
+    db_product = db.query(Product).filter(Product.id == product_id).first()
+    if not db_product:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="产品不存在"
+        )
+    
+    # 如果更新名称，检查是否与其他产品冲突
+    if product.name and product.name != db_product.name:
+        existing = db.query(Product).filter(Product.name == product.name).first()
+        if existing:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="产品名称已存在"
+            )
+    
+    # 更新字段
+    update_data = product.dict(exclude_unset=True)
+    for field, value in update_data.items():
+        setattr(db_product, field, value)
+    
+    db.commit()
+    db.refresh(db_product)
+    return ProductResponse(**db_product.to_dict())
+
+@app.delete("/api/admin/products/{product_id}")
+async def delete_product(
+    product_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_active_user)
+):
+    """删除产品"""
+    db_product = db.query(Product).filter(Product.id == product_id).first()
+    if not db_product:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="产品不存在"
+        )
+    
+    db.delete(db_product)
+    db.commit()
+    return {"message": "产品已删除"}
 
 
 # ==================== 认证相关路由 ====================
@@ -215,6 +314,60 @@ async def login_json(user_data: UserLogin, db: Session = Depends(get_db)):
 async def get_current_user_info(current_user: User = Depends(get_current_active_user)):
     """获取当前登录用户信息"""
     return current_user.to_dict()
+
+def get_token_from_cookie_or_header(
+    authorization: Optional[str] = Header(None, alias="Authorization"),
+    cookie: Optional[str] = Cookie(None, alias="token")
+):
+    """从 Cookie 或 Authorization header 中获取 token"""
+    # 优先从 Authorization header 获取
+    if authorization and authorization.startswith("Bearer "):
+        return authorization.split(" ")[1]
+    # 然后从 Cookie 获取
+    if cookie:
+        return cookie
+    return None
+
+@app.get("/api/auth/verify-attu")
+async def verify_attu_access(
+    token: Optional[str] = Depends(get_token_from_cookie_or_header),
+    db: Session = Depends(get_db)
+):
+    """验证 Attu 访问权限（用于 Nginx auth_request）"""
+    from auth import get_current_user
+    
+    if not token:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="未登录，请先登录"
+        )
+    
+    try:
+        # 使用现有的 get_current_user 逻辑验证 token
+        from jose import JWTError, jwt
+        from auth import SECRET_KEY, ALGORITHM
+        
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        username: str = payload.get("sub")
+        if username is None:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="无效的 token"
+            )
+        
+        user = db.query(User).filter(User.username == username).first()
+        if user is None or not user.is_active:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="用户不存在或已被禁用"
+            )
+        
+        return {"status": "ok", "username": user.username}
+    except JWTError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Token 无效或已过期"
+        )
 
 
 # ==================== 后台管理相关路由 ====================

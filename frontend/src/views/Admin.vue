@@ -3,23 +3,17 @@
     <div class="admin-header">
       <h1 class="admin-title">后台管理</h1>
       <div class="admin-tabs">
-        <button 
-          @click="activeTab = 'users'" 
-          :class="['admin-tab', { active: activeTab === 'users' }]"
-        >
+        <button @click="activeTab = 'users'" :class="['admin-tab', { active: activeTab === 'users' }]">
           用户管理
         </button>
-        <button 
-          @click="activeTab = 'articles'" 
-          :class="['admin-tab', { active: activeTab === 'articles' }]"
-        >
+        <button @click="activeTab = 'articles'" :class="['admin-tab', { active: activeTab === 'articles' }]">
           文章管理
         </button>
-        <button 
-          @click="activeTab = 'books'" 
-          :class="['admin-tab', { active: activeTab === 'books' }]"
-        >
+        <button @click="activeTab = 'books'" :class="['admin-tab', { active: activeTab === 'books' }]">
           Book管理
+        </button>
+        <button @click="activeTab = 'products'" :class="['admin-tab', { active: activeTab === 'products' }]">
+          AI产品管理
         </button>
       </div>
     </div>
@@ -75,18 +69,13 @@
                 </td>
                 <td>{{ formatDate(user.created_at) }}</td>
                 <td class="actions">
-                  <button
-                    @click="toggleUserStatus(user)"
+                  <button @click="toggleUserStatus(user)"
                     :class="['btn', 'btn-sm', user.is_active ? 'btn-warning' : 'btn-success']"
-                    :disabled="user.id === currentUser?.id"
-                  >
+                    :disabled="user.id === currentUser?.id">
                     {{ user.is_active ? '禁用' : '启用' }}
                   </button>
-                  <button
-                    @click="deleteUser(user)"
-                    class="btn btn-sm btn-danger"
-                    :disabled="user.id === currentUser?.id"
-                  >
+                  <button @click="deleteUser(user)" class="btn btn-sm btn-danger"
+                    :disabled="user.id === currentUser?.id">
                     删除
                   </button>
                 </td>
@@ -132,13 +121,8 @@
               <tr v-for="article in articles" :key="article.id">
                 <td>{{ article.id }}</td>
                 <td class="cover-cell">
-                  <img 
-                    v-if="article.cover_image" 
-                    :src="article.cover_image" 
-                    :alt="article.title"
-                    class="cover-thumbnail"
-                    @error="handleImageError"
-                  />
+                  <img v-if="article.cover_image" :src="article.cover_image" :alt="article.title"
+                    class="cover-thumbnail" @error="handleImageError" />
                   <span v-else class="no-cover-text">无封面</span>
                 </td>
                 <td class="title-cell">{{ article.title }}</td>
@@ -188,10 +172,12 @@
             </div>
             <div class="form-group">
               <label>封面图片URL</label>
-              <input v-model="articleForm.cover_image" type="text" placeholder="请输入封面图片URL或本地路径（如：/data/article-covers/xxx.jpg）" />
+              <input v-model="articleForm.cover_image" type="text"
+                placeholder="请输入封面图片URL或本地路径（如：/data/article-covers/xxx.jpg）" />
               <small class="form-hint">支持URL或本地路径（如：/data/article-covers/xxx.jpg）</small>
               <div v-if="articleForm.cover_image" class="cover-preview">
-                <img :src="articleForm.cover_image" alt="封面预览" @error="articlePreviewError = true" @load="articlePreviewError = false" />
+                <img :src="articleForm.cover_image" alt="封面预览" @error="articlePreviewError = true"
+                  @load="articlePreviewError = false" />
                 <span v-if="articlePreviewError" class="preview-error">图片加载失败</span>
               </div>
             </div>
@@ -210,7 +196,8 @@
           </div>
           <div class="modal-footer">
             <button @click="closeArticleModal" class="btn-cancel">取消</button>
-            <button @click="saveArticle" class="btn-save" :disabled="!articleForm.title || !articleForm.publish_date || !articleForm.author">
+            <button @click="saveArticle" class="btn-save"
+              :disabled="!articleForm.title || !articleForm.publish_date || !articleForm.author">
               {{ editingArticle ? '保存' : '创建' }}
             </button>
           </div>
@@ -252,13 +239,8 @@
               <tr v-for="book in books" :key="book.id">
                 <td>{{ book.id }}</td>
                 <td class="cover-cell">
-                  <img 
-                    v-if="book.cover_image" 
-                    :src="book.cover_image" 
-                    :alt="book.title"
-                    class="cover-thumbnail"
-                    @error="handleBookImageError"
-                  />
+                  <img v-if="book.cover_image" :src="book.cover_image" :alt="book.title" class="cover-thumbnail"
+                    @error="handleBookImageError" />
                   <span v-else class="no-cover-text">无封面</span>
                 </td>
                 <td class="title-cell">{{ book.title }}</td>
@@ -296,7 +278,8 @@
             </div>
             <div class="form-group">
               <label>封面图片URL</label>
-              <input v-model="bookForm.cover_image" type="text" placeholder="请输入封面图片URL或本地路径（如：/data/book-covers/xxx.jpg）" />
+              <input v-model="bookForm.cover_image" type="text"
+                placeholder="请输入封面图片URL或本地路径（如：/data/book-covers/xxx.jpg）" />
               <small class="form-hint">支持URL或本地路径（如：/data/book-covers/xxx.jpg）</small>
               <div v-if="bookForm.cover_image" class="cover-preview">
                 <img :src="bookForm.cover_image" alt="封面预览" @error="bookPreviewError = true" />
@@ -310,8 +293,114 @@
           </div>
           <div class="modal-footer">
             <button @click="closeBookModal" class="btn-cancel">取消</button>
-            <button @click="saveBook" class="btn-save" :disabled="!bookForm.title || !bookForm.author || !bookForm.publish_date">
+            <button @click="saveBook" class="btn-save"
+              :disabled="!bookForm.title || !bookForm.author || !bookForm.publish_date">
               {{ editingBook ? '保存' : '创建' }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- AI产品管理 -->
+    <div v-if="activeTab === 'products'">
+      <div class="admin-content-header">
+        <button @click="showProductModal = true" class="btn-create">
+          <span>+</span> 新建产品
+        </button>
+      </div>
+
+      <div v-if="productsLoading" class="loading">
+        <div class="spinner"></div>
+        <p>加载中...</p>
+      </div>
+
+      <div v-else-if="productsError" class="error-message">
+        {{ productsError }}
+      </div>
+
+      <div v-else class="admin-content">
+        <div class="products-table-container">
+          <table class="products-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>产品名称</th>
+                <th>标题</th>
+                <th>描述</th>
+                <th>特性</th>
+                <th>排序</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="product in products" :key="product.id">
+                <td>{{ product.id }}</td>
+                <td class="name-cell">{{ product.name }}</td>
+                <td class="title-cell">{{ product.title }}</td>
+                <td class="description-cell">{{ product.description.substring(0, 50) }}{{ product.description.length >
+                  50 ? '...' : '' }}</td>
+                <td class="features-cell">
+                  <span v-if="product.features">
+                    {{ Array.isArray(product.features) ? product.features.join(', ') : product.features }}
+                  </span>
+                  <span v-else class="text-muted">-</span>
+                </td>
+                <td>{{ product.order_index }}</td>
+                <td class="actions">
+                  <button @click="editProduct(product)" class="btn btn-sm btn-edit">编辑</button>
+                  <button @click="deleteProduct(product)" class="btn btn-sm btn-danger">删除</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 创建/编辑产品模态框 -->
+      <div v-if="showProductModal || editingProduct" class="modal-overlay" @click="closeProductModal">
+        <div class="modal-content" @click.stop>
+          <div class="modal-header">
+            <h3>{{ editingProduct ? '编辑产品' : '新建产品' }}</h3>
+            <button @click="closeProductModal" class="btn-close">×</button>
+          </div>
+          <div class="modal-body">
+            <div class="form-group">
+              <label>产品名称 *</label>
+              <input v-model="productForm.name" type="text" placeholder="请输入产品名称（唯一标识，如：moltbot）" required />
+            </div>
+            <div class="form-group">
+              <label>产品标题 *</label>
+              <input v-model="productForm.title" type="text" placeholder="请输入产品标题" required />
+            </div>
+            <div class="form-group">
+              <label>产品描述 *</label>
+              <textarea v-model="productForm.description" placeholder="请输入产品描述" rows="4" required></textarea>
+            </div>
+            <div class="form-group">
+              <label>产品特性</label>
+              <textarea v-model="productForm.features" placeholder="请输入产品特性，每行一个（如：自然语言理解&#10;多轮对话）"
+                rows="5"></textarea>
+              <small class="form-hint">每行一个特性，将显示为标签</small>
+            </div>
+            <div class="form-group">
+              <label>产品图片URL</label>
+              <input v-model="productForm.image_url" type="text" placeholder="请输入产品图片URL" />
+            </div>
+            <div class="form-group">
+              <label>官方网站URL</label>
+              <input v-model="productForm.official_url" type="text" placeholder="请输入官方网站URL" />
+            </div>
+            <div class="form-group">
+              <label>排序索引</label>
+              <input v-model.number="productForm.order_index" type="number" placeholder="数字越小越靠前，默认为0" />
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button @click="closeProductModal" class="btn-cancel">取消</button>
+            <button @click="saveProduct" class="btn-save"
+              :disabled="!productForm.name || !productForm.title || !productForm.description">
+              {{ editingProduct ? '保存' : '创建' }}
             </button>
           </div>
         </div>
@@ -339,6 +428,8 @@ watch(() => route.path, (path) => {
     activeTab.value = 'articles'
   } else if (path === '/admin/books') {
     activeTab.value = 'books'
+  } else if (path === '/admin/products') {
+    activeTab.value = 'products'
   } else {
     activeTab.value = 'users'
   }
@@ -361,7 +452,7 @@ const inactiveCount = computed(() => {
 const fetchUsers = async () => {
   usersLoading.value = true
   usersError.value = ''
-  
+
   try {
     const response = await fetch(`${API_BASE_URL}/api/admin/users`, {
       headers: {
@@ -465,7 +556,7 @@ const articleForm = ref({
 const fetchArticles = async () => {
   articlesLoading.value = true
   articlesError.value = ''
-  
+
   try {
     const response = await fetch(`${API_BASE_URL}/api/articles`, {
       headers: {
@@ -543,7 +634,7 @@ const saveArticle = async () => {
       content: articleForm.value.content || null,
       content_en: articleForm.value.content_en || null
     }
-    
+
     // 调试：打印要发送的cover_image值
     console.log('保存文章 - cover_image值:', payload.cover_image)
 
@@ -576,7 +667,7 @@ const saveArticle = async () => {
 
     // 保存成功后刷新列表
     await fetchArticles()
-    
+
     // 如果是在编辑模式，确保编辑的文章数据也被更新
     if (editingArticle.value) {
       const updatedArticle = articles.value.find(a => a.id === editingArticle.value.id)
@@ -584,7 +675,7 @@ const saveArticle = async () => {
         editingArticle.value = updatedArticle
       }
     }
-    
+
     closeArticleModal()
   } catch (err) {
     alert(err.message || '操作失败')
@@ -633,7 +724,7 @@ const bookForm = ref({
 const fetchBooks = async () => {
   booksLoading.value = true
   booksError.value = ''
-  
+
   try {
     const response = await fetch(`${API_BASE_URL}/api/books`, {
       headers: {
@@ -771,6 +862,149 @@ const handleBookImageError = (event) => {
   event.target.style.display = 'none'
 }
 
+// 产品管理
+const products = ref([])
+const productsLoading = ref(false)
+const productsError = ref('')
+const showProductModal = ref(false)
+const editingProduct = ref(null)
+
+const productForm = ref({
+  name: '',
+  title: '',
+  description: '',
+  features: '',
+  image_url: '',
+  official_url: '',
+  order_index: 0
+})
+
+const fetchProducts = async () => {
+  productsLoading.value = true
+  productsError.value = ''
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/admin/products`, {
+      headers: {
+        'Authorization': `Bearer ${token.value}`,
+      },
+    })
+
+    if (!response.ok) {
+      if (response.status === 401) {
+        throw new Error('请先登录')
+      }
+      throw new Error('获取产品列表失败')
+    }
+
+    const data = await response.json()
+    products.value = data
+  } catch (err) {
+    productsError.value = err.message || '加载产品列表失败'
+  } finally {
+    productsLoading.value = false
+  }
+}
+
+const editProduct = (product) => {
+  editingProduct.value = product
+  productForm.value = {
+    name: product.name,
+    title: product.title,
+    description: product.description,
+    features: Array.isArray(product.features) ? product.features.join('\n') : (product.features || ''),
+    image_url: product.image_url || '',
+    official_url: product.official_url || '',
+    order_index: product.order_index || 0
+  }
+}
+
+const closeProductModal = () => {
+  showProductModal.value = false
+  editingProduct.value = null
+  productForm.value = {
+    name: '',
+    title: '',
+    description: '',
+    features: '',
+    image_url: '',
+    official_url: '',
+    order_index: 0
+  }
+}
+
+const saveProduct = async () => {
+  if (!productForm.value.name || !productForm.value.title || !productForm.value.description) {
+    return
+  }
+
+  try {
+    const payload = {
+      name: productForm.value.name,
+      title: productForm.value.title,
+      description: productForm.value.description,
+      features: productForm.value.features || null,
+      image_url: productForm.value.image_url || null,
+      official_url: productForm.value.official_url || null,
+      order_index: productForm.value.order_index || 0
+    }
+
+    let response
+    if (editingProduct.value) {
+      response = await fetch(`${API_BASE_URL}/api/admin/products/${editingProduct.value.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token.value}`,
+        },
+        body: JSON.stringify(payload),
+      })
+    } else {
+      response = await fetch(`${API_BASE_URL}/api/admin/products`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token.value}`,
+        },
+        body: JSON.stringify(payload),
+      })
+    }
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}))
+      throw new Error(errorData.detail || (editingProduct.value ? '更新失败' : '创建失败'))
+    }
+
+    await fetchProducts()
+    closeProductModal()
+  } catch (err) {
+    alert(err.message || '操作失败')
+  }
+}
+
+const deleteProduct = async (product) => {
+  if (!confirm(`确定要删除产品"${product.title}"吗？`)) {
+    return
+  }
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/admin/products/${product.id}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${token.value}`,
+      },
+    })
+
+    if (!response.ok) {
+      throw new Error('删除失败')
+    }
+
+    await fetchProducts()
+  } catch (err) {
+    alert(err.message || '删除失败')
+  }
+}
+
 // 监听Tab切换，加载对应数据
 watch(activeTab, (tab) => {
   if (tab === 'users' && users.value.length === 0) {
@@ -779,6 +1013,8 @@ watch(activeTab, (tab) => {
     fetchArticles()
   } else if (tab === 'books' && books.value.length === 0) {
     fetchBooks()
+  } else if (tab === 'products' && products.value.length === 0) {
+    fetchProducts()
   }
 })
 
@@ -795,6 +1031,8 @@ onMounted(() => {
     fetchArticles()
   } else if (activeTab.value === 'books') {
     fetchBooks()
+  } else if (activeTab.value === 'products') {
+    fetchProducts()
   }
 })
 </script>
@@ -893,7 +1131,9 @@ onMounted(() => {
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .error-message {
@@ -943,7 +1183,8 @@ onMounted(() => {
 /* 表格样式 */
 .users-table-container,
 .articles-table-container,
-.books-table-container {
+.books-table-container,
+.products-table-container {
   background: #ffffff;
   border: 1px solid #e5e7eb;
   border-radius: 12px;
@@ -953,20 +1194,24 @@ onMounted(() => {
 
 .users-table,
 .articles-table,
-.books-table {
+.books-table,
+.products-table {
   width: 100%;
   border-collapse: collapse;
+  border-spacing: 0;
 }
 
 .users-table thead,
 .articles-table thead,
-.books-table thead {
+.books-table thead,
+.products-table thead {
   background: #f9fafb;
 }
 
 .users-table th,
 .articles-table th,
-.books-table th {
+.books-table th,
+.products-table th {
   padding: 1rem;
   text-align: left;
   font-weight: 600;
@@ -979,15 +1224,52 @@ onMounted(() => {
 
 .users-table td,
 .articles-table td,
-.books-table td {
+.books-table td,
+.products-table td {
   padding: 1rem;
   border-bottom: 1px solid #e5e7eb;
+  border-left: none;
+  border-right: none;
   color: #111827;
+  vertical-align: middle;
+  line-height: 1.5;
+}
+
+.users-table td:first-child,
+.articles-table td:first-child,
+.books-table td:first-child,
+.products-table td:first-child {
+  padding-left: 1rem;
+}
+
+.users-table td:last-child,
+.articles-table td:last-child,
+.books-table td:last-child,
+.products-table td:last-child {
+  padding-right: 1rem;
+}
+
+.users-table tbody tr,
+.articles-table tbody tr,
+.books-table tbody tr,
+.products-table tbody tr {
+  height: auto;
+}
+
+/* 确保操作列与其他列高度一致 */
+.users-table tbody tr td.actions,
+.articles-table tbody tr td.actions,
+.books-table tbody tr td.actions,
+.products-table tbody tr td.actions {
+  vertical-align: top;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
 }
 
 .users-table tbody tr:hover,
 .articles-table tbody tr:hover,
-.books-table tbody tr:hover {
+.books-table tbody tr:hover,
+.products-table tbody tr:hover {
   background: #f9fafb;
 }
 
@@ -1017,6 +1299,31 @@ onMounted(() => {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.name-cell {
+  font-weight: 600;
+  color: #3b82f6;
+}
+
+.description-cell {
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.features-cell {
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.text-muted {
+  color: #9ca3af;
 }
 
 .status-badge {
@@ -1050,6 +1357,12 @@ onMounted(() => {
 .actions {
   display: flex;
   gap: 0.5rem;
+  align-items: flex-start;
+  justify-content: center;
+  white-space: nowrap;
+  width: 100%;
+  padding-top: 0;
+  padding-bottom: 0;
 }
 
 .btn {
@@ -1065,6 +1378,8 @@ onMounted(() => {
 .btn-sm {
   padding: 0.375rem 0.75rem;
   font-size: 0.75rem;
+  line-height: 1.5;
+  height: auto;
 }
 
 .btn-success {
@@ -1282,6 +1597,7 @@ onMounted(() => {
 }
 
 @media (max-width: 768px) {
+
   .users-table-container,
   .articles-table-container,
   .books-table-container {

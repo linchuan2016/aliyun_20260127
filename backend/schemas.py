@@ -1,7 +1,7 @@
 """
 Pydantic 模型定义（用于请求和响应验证）
 """
-from typing import Optional
+from typing import Optional, List
 from pydantic import BaseModel, EmailStr
 
 
@@ -126,6 +126,42 @@ class BookResponse(BaseModel):
     author: str
     publish_date: str
     description: Optional[str] = None
+    created_at: Optional[str] = None
+    updated_at: Optional[str] = None
+
+
+class ProductCreate(BaseModel):
+    """创建产品请求模型"""
+    name: str
+    title: str
+    description: str
+    features: Optional[str] = None
+    image_url: Optional[str] = None
+    official_url: Optional[str] = None
+    order_index: int = 0
+
+
+class ProductUpdate(BaseModel):
+    """更新产品请求模型"""
+    name: Optional[str] = None
+    title: Optional[str] = None
+    description: Optional[str] = None
+    features: Optional[str] = None
+    image_url: Optional[str] = None
+    official_url: Optional[str] = None
+    order_index: Optional[int] = None
+
+
+class ProductResponse(BaseModel):
+    """产品响应模型"""
+    id: int
+    name: str
+    title: str
+    description: str
+    features: Optional[List[str]] = None
+    image_url: Optional[str] = None
+    official_url: Optional[str] = None
+    order_index: int
     created_at: Optional[str] = None
     updated_at: Optional[str] = None
 

@@ -44,16 +44,21 @@ const vectorDBs = [
       <p class="rag-subtitle">专业的向量数据库解决方案</p>
     </header>
 
+    <!-- Milvus-Attu 已部署入口 -->
+    <div class="attu-deployment-card">
+      <router-link to="/attu" class="attu-link">
+        <div class="attu-icon">🚀</div>
+        <div class="attu-content">
+          <h2 class="attu-title">Milvus-Attu已部署</h2>
+          <p class="attu-description">点击访问 Milvus 向量数据库管理界面</p>
+        </div>
+      </router-link>
+    </div>
+
     <!-- 向量数据库列表 -->
     <div class="vector-dbs-container">
-      <a
-        v-for="db in vectorDBs"
-        :key="db.id"
-        :href="db.official_url"
-        target="_blank"
-        rel="noopener noreferrer"
-        class="vector-db-card"
-      >
+      <a v-for="db in vectorDBs" :key="db.id" :href="db.official_url" target="_blank" rel="noopener noreferrer"
+        class="vector-db-card">
         <div class="vector-db-image">
           <img :src="db.image_url" :alt="db.title" />
         </div>
@@ -102,6 +107,54 @@ const vectorDBs = [
   color: #6b7280;
   margin: 0;
   font-weight: 300;
+}
+
+.attu-deployment-card {
+  max-width: 1600px;
+  margin: 0 auto 2rem;
+  position: relative;
+  z-index: 1;
+}
+
+.attu-link {
+  background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+  border-radius: 16px;
+  padding: 2rem;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  text-decoration: none;
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  transition: all 0.3s ease;
+}
+
+.attu-link:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(59, 130, 246, 0.4);
+}
+
+.attu-icon {
+  font-size: 3rem;
+  line-height: 1;
+}
+
+.attu-content {
+  flex: 1;
+}
+
+.attu-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0 0 0.5rem 0;
+  color: #ffffff;
+}
+
+.attu-description {
+  font-size: 1rem;
+  margin: 0;
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 400;
 }
 
 .vector-dbs-container {
@@ -200,10 +253,9 @@ const vectorDBs = [
   .rag-title {
     font-size: 2rem;
   }
-  
+
   .vector-dbs-container {
     grid-template-columns: 1fr;
   }
 }
 </style>
-

@@ -15,6 +15,7 @@ import AdminSetup from '../views/AdminSetup.vue'
 import Admin from '../views/Admin.vue'
 import AdminArticles from '../views/AdminArticles.vue'
 import AdminBooks from '../views/AdminBooks.vue'
+import AttuGuard from '../views/AttuGuard.vue'
 import My from '../views/My.vue'
 import { token } from '../composables/useAuth'
 
@@ -43,6 +44,12 @@ const routes = [
     path: '/rag',
     name: 'RAG',
     component: RAG
+  },
+  {
+    path: '/attu',
+    name: 'AttuGuard',
+    component: AttuGuard,
+    meta: { requiresAuth: true }
   },
   {
     path: '/blog',
@@ -149,8 +156,8 @@ router.beforeEach(async (to, from, next) => {
   // 检查需要登录的页面
   if (to.meta.requiresAuth) {
     if (!token.value) {
-      // 如果是管理员页面，跳转到管理员登录页面
-      if (to.path.startsWith('/admin')) {
+      // 如果是管理员页面或 Attu 页面，跳转到管理员登录页面
+      if (to.path.startsWith('/admin') || to.path.startsWith('/attu')) {
         next('/admin/login')
       } else {
         // 其他需要登录的页面，跳转到用户登录页面

@@ -44,6 +44,9 @@ export function useAuth() {
       localStorage.setItem('token', data.access_token)
       localStorage.setItem('user', JSON.stringify(data.user))
       
+      // 同时设置 Cookie，用于 Nginx auth_request 验证
+      document.cookie = `token=${data.access_token}; path=/; max-age=86400; SameSite=Lax`
+      
       return { success: true }
     } catch (error) {
       // 处理网络错误
@@ -93,6 +96,8 @@ export function useAuth() {
     user.value = null
     localStorage.removeItem('token')
     localStorage.removeItem('user')
+    // 清除 Cookie
+    document.cookie = 'token=; path=/; max-age=0'
     router.push('/')
   }
 
